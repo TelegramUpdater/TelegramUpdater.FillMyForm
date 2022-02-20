@@ -12,10 +12,5 @@ namespace TelegramUpdater.FillMyForm.UpdateCrackers.SealedCrackers
             CancelTriggerAbs<CallbackQuery>? cancelTrigger = null)
             : base(x => x.CallbackQuery, updateChannel, cracker, cancelTrigger)
         { }
-
-        protected override T Crack(CallbackQuery update)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -14,6 +14,7 @@ internal class MySimpleForm : AbstractForm
     [Required]
     [MinLength(3)]
     [MaxLength(32)]
+    [FillPropertyRetry(FillingError.ValidationError, 2)]
     public string FirstName { get; set; } = null!;
 
     [MinLength(3)]

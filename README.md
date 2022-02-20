@@ -297,3 +297,40 @@ public override async Task OnValidationErrorAsync(IUpdater updater,
 Go ahead! run the bot, try some invalid stuff and watch.
 
 ![Screenshot-1](statics/SS-1.png "Validations!")
+
+### Add retry options
+
+You can add retry option for a property. it means the bot will try again if
+something gets invalid.
+
+```csharp
+[Required]
+[MinLength(3)]
+[MaxLength(32)]
+[FillPropertyRetry(FillingError.ValidationError, 2)]
+public string FirstName { get; set; } = null!;
+```
+
+Now user has two more chances if he/she fails.
+
+## What's next?
+
+### More control
+
+You can implement more response methods to get more control.
+  
+- `OnTimeOutAsync`
+- `OnConversationErrorAsync`
+- `OnUnrelatedUpdateAsync`
+- `OnCancelAsync`
+
+### God like control
+
+In the most advanced use of package you can handle more complex conversations.
+As instance you may want to show a menu to the user using inline buttons and catch the
+response.
+
+It's possible using `UpdateCrackers`.
+
+Take a look at [SurveyBot](Examples/SurveyBot). Crackers are added in handler
+( `Program.cs` )
