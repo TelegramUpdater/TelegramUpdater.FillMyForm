@@ -205,6 +205,16 @@ internal class MySimpleForm : AbstractForm
 
 Run the app again and try sending `/cancel` while filling a form.
 
+### Default cancel trigger
+
+You can also use a default cancel trigger which will be used for all of properties
+if they has no any cancel triggers already.
+
+```csharp
+var filler = new FormFiller<MySimpleForm>(
+    defaultCancelTrigger: new MessageCancelTextTrigger());
+```
+
 ### Make a property Required
 
 Simply use `[Required]` from `System.ComponentModel.DataAnnotations`.
@@ -230,3 +240,60 @@ internal class MySimpleForm : AbstractForm
 ```
 
 Now try using `/cancel` on required properties and see the form fails.
+
+### Other validations
+
+You can set other limitation for user inputs. Eg: MaxLength for string.
+
+```csharp
+// MySimpleForm.cs
+// -- sniff --
+
+[Required]
+[MinLength(3)]
+[MaxLength(32)]
+public string FirstName { get; set; } = null!;
+
+[MinLength(3)]
+[MaxLength(32)]
+public string? LastName { get; set; } // can be null, It's Nullable!
+
+[Required]
+[Range(13, 120)]
+public int Age { get; set; }
+
+// -- sniff --
+```
+
+At this point you better implement another method to handle invalid inputs response.
+The method is `OnValidationErrorAsync`.
+
+I implemented it this way:
+
+```csharp
+public override async Task OnValidationErrorAsync(IUpdater updater,
+                                            ShiningInfo<long, Update>? shiningInfo,
+                                            User user,
+                                            string propertyName,
+                                            ValidationErrorContext validationErrorContext,
+                                            CancellationToken cancellationToken)
+{
+    if (validationErrorContext.RequiredItemNotSupplied)
+    {
+        await updater.BotClient.SendTextMessageAsync(
+            user.Id, $"{propertyName} was required! You can't just leave it.");
+    }
+    else
+    {
+        await updater.BotClient.SendTextMessageAsync(
+            user.Id,
+            $"You input is invalid for {propertyName}.\n" +
+            string.Join("\n", validationErrorContext.ValidationResults.Select(
+                x=> x.ErrorMessage)));
+    }
+}
+```
+
+Go ahead! run the bot, try some invalid stuff and watch.
+
+![Screenshot-1](/statics/Screenshot 2022-02-20 221014.png "Validations!")

@@ -1,6 +1,7 @@
 ﻿using Telegram.Bot.Types;
 using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
+using TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
 using TelegramUpdater.UpdateContainer;
 using TelegramUpdater.UpdateHandlers.ScopedHandlers.ReadyToUse;
 
@@ -11,7 +12,8 @@ internal class FormHandler : ScopedMessageHandler
 {
     protected override async Task HandleAsync(IContainer<Message> updateContainer)
     {
-        var filler = new FormFiller<MySimpleForm>();
+        var filler = new FormFiller<MySimpleForm>(
+            defaultCancelTrigger: new MessageCancelTextTrigger());
 
         var ok = await filler.FillAsync(updateContainer.Sender()!, updateContainer);
 

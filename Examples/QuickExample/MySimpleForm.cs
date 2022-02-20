@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
-using TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
+using TelegramUpdater.RainbowUtlities;
 using TelegramUpdater.UpdateContainer.UpdateContainers;
 
 namespace QuickExample;
@@ -12,14 +12,16 @@ namespace QuickExample;
 internal class MySimpleForm : AbstractForm
 {
     [Required]
-    [FormProperty(CancelTriggerType = typeof(MessageCancelTextTrigger))]
+    [MinLength(3)]
+    [MaxLength(32)]
     public string FirstName { get; set; } = null!;
 
-    [FormProperty(CancelTriggerType = typeof(MessageCancelTextTrigger))]
+    [MinLength(3)]
+    [MaxLength(32)]
     public string? LastName { get; set; } // can be null, It's Nullable!
 
     [Required]
-    [FormProperty(CancelTriggerType = typeof(MessageCancelTextTrigger))]
+    [Range(13, 120)]
     public int Age { get; set; }
 
     public override string ToString()
@@ -45,5 +47,27 @@ internal class MySimpleForm : AbstractForm
                                         CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+
+    public override async Task OnValidationErrorAsync(IUpdater updater,
+                                                ShiningInfo<long, Update>? shiningInfo,
+                                                User user,
+                                                string propertyName,
+                                                ValidationErrorContext validationErrorContext,
+                                                CancellationToken cancellationToken)
+    {
+        if (validationErrorContext.RequiredItemNotSupplied)
+        {
+            await updater.BotClient.SendTextMessageAsync(
+                user.Id, $"{propertyName} was required! You can't just leave it.");
+        }
+        else
+        {
+            await updater.BotClient.SendTextMessageAsync(
+                user.Id,
+                $"You input is invalid for {propertyName}.\n" +
+                string.Join("\n", validationErrorContext.ValidationResults.Select(
+                    x=> x.ErrorMessage)));
+        }
     }
 }
