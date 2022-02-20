@@ -296,4 +296,4 @@ public override async Task OnValidationErrorAsync(IUpdater updater,
 
 Go ahead! run the bot, try some invalid stuff and watch.
 
-![Screenshot-1](.statics/SS-1.png "Validations!")
+![Screenshot-1](statics/SS-1.png "Validations!")
