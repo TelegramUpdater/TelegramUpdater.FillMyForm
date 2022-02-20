@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace TelegramUpdater.FillMyForm;
 
@@ -16,10 +15,7 @@ internal sealed class PropertyFillingInfo
         RetryAttributes = new();
     }
 
-    [MemberNotNullWhen(true, "RequiredErrorMessage")]
     internal bool Required { get; set; } = false;
-    
-    internal string? RequiredErrorMessage { get; set; }
 
     internal Type Type => PropertyInfo.PropertyType;
 

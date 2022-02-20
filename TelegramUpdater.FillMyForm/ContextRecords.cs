@@ -15,6 +15,7 @@ namespace TelegramUpdater.FillMyForm
                                            Type ExceptedType);
 
     public record ValidationErrorContext(RetryContext? RetryContext,
+                                         bool RequiredItemNotSupplied,
                                          IEnumerable<ValidationResult> ValidationResults);
 
     public record OnUnrelatedUpdateContext(ShiningInfo<long, Update> ShiningInfo);
