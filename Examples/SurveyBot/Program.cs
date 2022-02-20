@@ -21,35 +21,22 @@ await new Updater(new TelegramBotClient("BOT_TOKEN"))
 
 async Task HandleUpdate(IContainer<Message> ctnr)
 {
+    var callbackCancelTrigger = new CallbackQueryCancelTrigger(FilterCutify.DataMatches("^cancel$"));
+
     var filler = new FormFiller<SimpleSurvey>(
         ctx => ctx
+        // Add custom cracker for each property
         .AddCracker(
             x => x.HowLovelyWeAre, new CallbackQueryCracker<HowLovelyWeAre>(
-                new CallbackQueryChannel(
-                    TimeSpan.FromSeconds(30),
-                    FilterCutify.DataMatches(@"^HLWA_")),
+                new CallbackQueryChannel(TimeSpan.FromSeconds(30), FilterCutify.DataMatches(@"^HLWA_")), // 1. Get matching update
+                x => x.ToHowLovelyWeAre(),                                                               // 2. Extract value from update
+                callbackCancelTrigger))                                                                  // 3. Add a cancel trigger
 
-                x => x.ToHowLovelyWeAre(),
-
-                new CallbackQueryCancelTrigger(
-                    FilterCutify.DataMatches("^cancel$")
-                )
-            )
-        )
         .AddCracker(
             x => x.FoundFromWhere, new CallbackQueryCracker<FoundFromWhere>(
-                new CallbackQueryChannel(
-                    TimeSpan.FromSeconds(30),
-                    FilterCutify.DataMatches(@"^FFW_")),
-
+                new CallbackQueryChannel(TimeSpan.FromSeconds(30), FilterCutify.DataMatches(@"^FFW_")),
                 x => x.ToFoundFromWhere(),
-
-                new CallbackQueryCancelTrigger(
-                    FilterCutify.DataMatches("^cancel$")
-                )
-            )
-        )
-    );
+                callbackCancelTrigger)));
 
     var ok = await filler.FillAsync(ctnr.Sender()!, ctnr);
 
@@ -62,7 +49,6 @@ async Task HandleUpdate(IContainer<Message> ctnr)
         await ctnr.Response($"Please try again later.");
     }
 }
-
 
 static Task HandleException(IUpdater updater, Exception exception)
 {
