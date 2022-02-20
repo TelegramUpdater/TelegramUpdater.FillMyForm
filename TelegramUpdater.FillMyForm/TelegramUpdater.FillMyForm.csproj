@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.0.0-alpha</Version>
+    <Authors>immmdreza</Authors>
+    <Company>TelegramUpdater</Company>
+    <Description>This is an extension package for TelegramUpdater to help you fill a form in a blink of an eye.</Description>
+    <Copyright>TelegramUpdater by immmdreza</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/TelegramUpdater/FillMyForm</RepositoryUrl>
+    <PackageTags>telegramUpdater; telegram; bot; framework; extension; csharp; net6</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+
+	  <None Include="..\LICENSE">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+	  </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TelegramUpdater" Version="1.1.12-alpha" />
+  </ItemGroup>
+
+</Project>
