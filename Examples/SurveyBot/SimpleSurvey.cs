@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Telegram.Bot;
-using Telegram.Bot.Types;
-using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
-using TelegramUpdater.UpdateContainer.UpdateContainers;
 
 namespace SurveyBot
 {
@@ -35,36 +32,33 @@ namespace SurveyBot
             return $"Survey result: 1. {HowLovelyWeAre}, 2. {FoundFromWhere}";
         }
 
-        public override async Task OnBeginAskAsync(IUpdater updater, User askingFrom, string propertyName, CancellationToken cancellationToken)
+        public override async Task OnBeginAskAsync<TForm>(
+            FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
         {
-            if (propertyName == "HowLovelyWeAre")
+            if (fillterContext.PropertyName == "HowLovelyWeAre")
             {
-                await updater.BotClient.SendTextMessageAsync(
-                    askingFrom.Id, "How much do you love us?",
+                await fillterContext.SendTextMessageAsync(
+                    "How much do you love us?",
                     replyMarkup: Extensions.HowLovelyWeAreButtons(),
                     cancellationToken: cancellationToken);
             }
             else
             {
-                await updater.BotClient.SendTextMessageAsync(
-                    askingFrom.Id, "Where did you find us?",
+                await fillterContext.SendTextMessageAsync(
+                    "Where did you find us?",
                     replyMarkup: Extensions.HowFoundFromWhereButtons(),
                     cancellationToken: cancellationToken);
             }
         }
 
-        public override async Task OnSuccessAsync(RawContainer? container, User askingFrom, string propertyName, OnSuccessContext onSuccessContext, CancellationToken cancellationToken)
+        public override async Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext, OnSuccessContext onSuccessContext, CancellationToken cancellationToken)
         {
-            if (container is null) return;
-
-            switch (container)
+            switch (onSuccessContext)
             {
-                case { BotClient: { } bot, ShiningInfo: { Value: { CallbackQuery: { Message: { } msg } } update } }:
+                case { ShiningInfo: { Value: { CallbackQuery: { Message: { } msg } } } }:
                     {
-                        await bot.EditMessageTextAsync(
-                            msg.Chat.Id, msg.MessageId,
-                            $"Got it {onSuccessContext.Value}",
-                            cancellationToken: cancellationToken);
+                        await fillterContext.TelegramBotClient.DeleteMessageAsync(
+                            msg.Chat.Id, msg.MessageId, cancellationToken: cancellationToken);
                         break;
                     }
             }

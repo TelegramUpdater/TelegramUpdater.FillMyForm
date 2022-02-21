@@ -1,11 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
-using TelegramUpdater.RainbowUtlities;
-using TelegramUpdater.UpdateContainer.UpdateContainers;
 
 namespace QuickExample;
 
@@ -30,45 +26,32 @@ internal class MySimpleForm : AbstractForm
         return string.Format("{0} {1}, {2} years old.", FirstName, LastName?? "", Age);
     }
 
-    public override async Task OnBeginAskAsync(IUpdater updater,
-                                               User askingFrom,
-                                               string propertyName,
-                                               CancellationToken cancellationToken)
+    public override async Task OnBeginAskAsync<TForm>(FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
     {
-        await updater.BotClient.SendTextMessageAsync(
-            askingFrom.Id, $"Please send me a value for {propertyName}",
+        await fillterContext.SendTextMessageAsync(
+            $"Please send me a value for {fillterContext.PropertyName}",
             replyMarkup: new ForceReplyMarkup(),
             cancellationToken: cancellationToken);
     }
 
-    public override Task OnSuccessAsync(RawContainer? container,
-                                        User askingFrom,
-                                        string propertyName,
-                                        OnSuccessContext onSuccessContext,
-                                        CancellationToken cancellationToken)
+    public override Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext, OnSuccessContext onSuccessContext, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
-    public override async Task OnValidationErrorAsync(IUpdater updater,
-                                                ShiningInfo<long, Update>? shiningInfo,
-                                                User user,
-                                                string propertyName,
-                                                ValidationErrorContext validationErrorContext,
-                                                CancellationToken cancellationToken)
+    public override async Task OnValidationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext, ValidationErrorContext validationErrorContext, CancellationToken cancellationToken)
     {
         if (validationErrorContext.RequiredItemNotSupplied)
         {
-            await updater.BotClient.SendTextMessageAsync(
-                user.Id, $"{propertyName} was required! You can't just leave it.");
+            await fillterContext.SendTextMessageAsync(
+                $"{fillterContext.PropertyName} was required! You can't just leave it.");
         }
         else
         {
-            await updater.BotClient.SendTextMessageAsync(
-                user.Id,
-                $"You input is invalid for {propertyName}.\n" +
+            await fillterContext.SendTextMessageAsync(
+                $"You input is invalid for {fillterContext.PropertyName}.\n" +
                 string.Join("\n", validationErrorContext.ValidationResults.Select(
-                    x=> x.ErrorMessage)));
+                    x => x.ErrorMessage)));
         }
     }
 }

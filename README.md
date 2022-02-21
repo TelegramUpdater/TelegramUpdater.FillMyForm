@@ -40,6 +40,8 @@ internal class MySimpleForm
 - > Target properties should be: `public`, `Readable` and `Writeable`
   > ( both `get` and `set` )
 
+- > Form class **Should** have a parameterless constructor.
+
 A useable form should implement `IForm` interface!
 But `AbstractForm` is what you need.
 
@@ -60,21 +62,12 @@ internal class MySimpleForm : AbstractForm
         return string.Format("{0} {1}, {2} years old.", FirstName, LastName?? "", Age);
     }
 
-    public override Task OnBeginAskAsync(
-        IUpdater updater,
-        User askingFrom,
-        string propertyName,
-        CancellationToken cancellationToken)
+    public override async Task OnBeginAskAsync<TForm>(FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public override Task OnSuccessAsync(
-        RawContainer? container,
-        User askingFrom,
-        string propertyName,
-        OnSuccessContext onSuccessContext,
-        CancellationToken cancellationToken)
+    public override Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext, OnSuccessContext onSuccessContext, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
@@ -92,13 +85,10 @@ This things are possible using `OnBeginAskAsync` and `OnSuccessAsync` methods.
 Let's apply a simple implementation for `OnBeginAskAsync`.
 
 ```csharp
-public override async Task OnBeginAskAsync(IUpdater updater,
-                                            User askingFrom,
-                                            string propertyName,
-                                            CancellationToken cancellationToken)
+public override async Task OnBeginAskAsync<TForm>(FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
 {
-    await updater.BotClient.SendTextMessageAsync(
-        askingFrom.Id, $"Please send me a value for {propertyName}",
+    await fillterContext.SendTextMessageAsync(
+        $"Please send me a value for {fillterContext.PropertyName}",
         replyMarkup: new ForceReplyMarkup(),
         cancellationToken: cancellationToken);
 }
@@ -109,11 +99,7 @@ public override async Task OnBeginAskAsync(IUpdater updater,
 For now i don't want to say anything on partial successes. Therefor:
 
 ```csharp
-public override Task OnSuccessAsync(RawContainer? container,
-                                    User askingFrom,
-                                    string propertyName,
-                                    OnSuccessContext onSuccessContext,
-                                    CancellationToken cancellationToken)
+public override Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext, OnSuccessContext onSuccessContext, CancellationToken cancellationToken)
 {
     return Task.CompletedTask;
 }
@@ -136,17 +122,17 @@ internal class FormHandler : ScopedMessageHandler
 {
     protected override async Task HandleAsync(IContainer<Message> updateContainer)
     {
-        // Create a FormFiller using your form ( MySimpleForm )
-        var filler = new FormFiller<MySimpleForm>();
+        var filler = new FormFiller<MySimpleForm>(
+            updateContainer.Updater,
+            defaultCancelTrigger: new MessageCancelTextTrigger());
 
-        // Start filling the form
-        var ok = await filler.FillAsync(updateContainer.Sender()!, updateContainer);
+        var form = await filler.FillAsync(updateContainer.Sender()!);
 
-        if (ok) // Filled with success.
+        if (form is not null)
         {
-            await updateContainer.Response($"Thank you, {filler.Form}");
+            await updateContainer.Response($"Thank you, {form}");
         }
-        else // Form is broken.
+        else
         {
             await updateContainer.Response($"Please try again later.");
         }
@@ -271,25 +257,19 @@ The method is `OnValidationErrorAsync`.
 I implemented it this way:
 
 ```csharp
-public override async Task OnValidationErrorAsync(IUpdater updater,
-                                            ShiningInfo<long, Update>? shiningInfo,
-                                            User user,
-                                            string propertyName,
-                                            ValidationErrorContext validationErrorContext,
-                                            CancellationToken cancellationToken)
+public override async Task OnValidationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext, ValidationErrorContext validationErrorContext, CancellationToken cancellationToken)
 {
     if (validationErrorContext.RequiredItemNotSupplied)
     {
-        await updater.BotClient.SendTextMessageAsync(
-            user.Id, $"{propertyName} was required! You can't just leave it.");
+        await fillterContext.SendTextMessageAsync(
+            $"{fillterContext.PropertyName} was required! You can't just leave it.");
     }
     else
     {
-        await updater.BotClient.SendTextMessageAsync(
-            user.Id,
-            $"You input is invalid for {propertyName}.\n" +
+        await fillterContext.SendTextMessageAsync(
+            $"You input is invalid for {fillterContext.PropertyName}.\n" +
             string.Join("\n", validationErrorContext.ValidationResults.Select(
-                x=> x.ErrorMessage)));
+                x => x.ErrorMessage)));
     }
 }
 ```

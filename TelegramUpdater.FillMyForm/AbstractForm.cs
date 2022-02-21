@@ -8,39 +8,39 @@
             where TForm : IForm, new();
 
         /// <inheritdoc/>
-        public abstract Task OnCancelAsync<TForm>(FormFillterContext<TForm> fillterContext,
-                                                  OnCancelContext onCancelContext,
-                                                  CancellationToken cancellationToken)
-            where TForm : IForm, new();
-
-        /// <inheritdoc/>
-        public abstract Task OnConversationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext,
-                                                             ConversationErrorContext conversationErrorContext,
-                                                             CancellationToken cancellationToken)
-            where TForm : IForm, new();
-
-        /// <inheritdoc/>
         public abstract Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext,
                                                    OnSuccessContext onSuccessContext,
                                                    CancellationToken cancellationToken)
             where TForm : IForm, new();
 
         /// <inheritdoc/>
-        public abstract Task OnTimeOutAsync<TForm>(FormFillterContext<TForm> fillterContext,
+        public virtual Task OnCancelAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                  OnCancelContext onCancelContext,
+                                                  CancellationToken cancellationToken)
+            where TForm : IForm, new() => Task.CompletedTask;
+
+        /// <inheritdoc/>
+        public virtual Task OnConversationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                             ConversationErrorContext conversationErrorContext,
+                                                             CancellationToken cancellationToken)
+            where TForm : IForm, new() => Task.CompletedTask;
+
+        /// <inheritdoc/>
+        public virtual Task OnTimeOutAsync<TForm>(FormFillterContext<TForm> fillterContext,
                                                    TimeoutContext timeoutContext,
                                                    CancellationToken cancellationToken)
-            where TForm : IForm, new();
+            where TForm : IForm, new() => Task.CompletedTask;
 
         /// <inheritdoc/>
-        public abstract Task OnUnrelatedUpdateAsync<TForm>(FormFillterContext<TForm> fillterContext,
+        public virtual Task OnUnrelatedUpdateAsync<TForm>(FormFillterContext<TForm> fillterContext,
                                                            OnUnrelatedUpdateContext onUnrelatedUpdateContext,
                                                            CancellationToken cancellationToken)
-            where TForm : IForm, new();
+            where TForm : IForm, new() => Task.CompletedTask;
 
         /// <inheritdoc/>
-        public abstract Task OnValidationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext,
+        public virtual Task OnValidationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext,
                                                            ValidationErrorContext validationErrorContext,
                                                            CancellationToken cancellationToken)
-            where TForm : IForm, new();
+            where TForm : IForm, new() => Task.CompletedTask;
     }
 }

@@ -13,13 +13,14 @@ internal class FormHandler : ScopedMessageHandler
     protected override async Task HandleAsync(IContainer<Message> updateContainer)
     {
         var filler = new FormFiller<MySimpleForm>(
+            updateContainer.Updater,
             defaultCancelTrigger: new MessageCancelTextTrigger());
 
-        var ok = await filler.FillAsync(updateContainer.Sender()!, updateContainer);
+        var form = await filler.FillAsync(updateContainer.Sender()!);
 
-        if (ok)
+        if (form is not null)
         {
-            await updateContainer.Response($"Thank you, {filler.Form}");
+            await updateContainer.Response($"Thank you, {form}");
         }
         else
         {

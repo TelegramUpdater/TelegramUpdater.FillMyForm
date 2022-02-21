@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramUpdater.RainbowUtlities;
 
 namespace TelegramUpdater.FillMyForm
@@ -44,4 +46,22 @@ namespace TelegramUpdater.FillMyForm
                                          ShiningInfo<long, Update>? ShiningInfo,
                                          bool RequiredItemNotSupplied,
                                          IEnumerable<ValidationResult> ValidationResults);
+    
+    public static class FormFillerContextExtensions
+    {
+        public static async Task<Message> SendTextMessageAsync<TForm>(
+            this FormFillterContext<TForm> formFillter,
+            string text, ParseMode? parseMode = null,
+            IEnumerable<MessageEntity>? entities = null, bool? disableWebPagePreview = null,
+            bool? disableNotification = null, int? replyToMessageId = null,
+            bool? allowSendingWithoutReply = null, IReplyMarkup? replyMarkup = null,
+            CancellationToken cancellationToken = default) where TForm : IForm, new()
+        {
+            return await formFillter.TelegramBotClient.SendTextMessageAsync(
+                formFillter.AskingFrom.Id, text, parseMode, entities,
+                disableWebPagePreview, disableNotification,
+                replyToMessageId, allowSendingWithoutReply,
+                replyMarkup, cancellationToken);
+        }
+    }
 }

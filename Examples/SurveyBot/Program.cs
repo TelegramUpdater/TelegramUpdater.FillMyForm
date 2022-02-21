@@ -25,6 +25,7 @@ async Task HandleUpdate(IContainer<Message> ctnr)
         FilterCutify.DataMatches("^cancel$")); // Cancellation will trigger on "cancel" callback data.
 
     var filler = new FormFiller<SimpleSurvey>(
+        ctnr.Updater,
         ctx => ctx
         // Add custom cracker for each property
         .AddCracker(
@@ -47,11 +48,11 @@ async Task HandleUpdate(IContainer<Message> ctnr)
                 callbackCancelTrigger)));
 
 
-    var ok = await filler.FillAsync(ctnr.Sender()!, ctnr);
+    var form = await filler.FillAsync(ctnr.Sender()!); // I'm sure the sender is not null, are you?
 
-    if (ok) // Form got filled.
+    if (form is not null) // Form got filled.
     {
-        await ctnr.Response($"Thank you, {filler.Form}");
+        await ctnr.Response($"Thank you, {form}");
     }
     else // Something is wrong
     {
