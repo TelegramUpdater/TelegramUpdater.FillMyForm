@@ -1,56 +1,46 @@
-﻿using Telegram.Bot.Types;
-using TelegramUpdater.RainbowUtlities;
-using TelegramUpdater.UpdateContainer.UpdateContainers;
-
-namespace TelegramUpdater.FillMyForm
+﻿namespace TelegramUpdater.FillMyForm
 {
     public abstract class AbstractForm : IForm
     {
-        public abstract Task OnBeginAskAsync(IUpdater updater,
-                                                      User askingFrom,
-                                                      string propertyName,
-                                                      CancellationToken cancellationToken);
-
-        public abstract Task OnSuccessAsync(RawContainer? container,
-                                            User askingFrom,
-                                            string propertyName,
-                                            OnSuccessContext onSuccessContext,
-                                            CancellationToken cancellationToken);
-
-        public virtual Task OnConversationErrorAsync(RawContainer? rawContainer,
-                                                              User askingFrom,
-                                                              string propertyName,
-                                                              ConversationErrorContext conversationErrorContext,
-                                                              CancellationToken cancellationToken)
-            => Task.CompletedTask;
-
-        public virtual Task OnTimeOutAsync(IUpdater updater,
-                                                    User askingFrom,
-                                                    string propertyName,
-                                                    TimeoutContext timeoutContext,
+        /// <inheritdoc/>
+        public abstract Task OnBeginAskAsync<TForm>(FormFillterContext<TForm> fillterContext,
                                                     CancellationToken cancellationToken)
-            => Task.CompletedTask;
+            where TForm : IForm, new();
 
+        /// <inheritdoc/>
+        public abstract Task OnCancelAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                  OnCancelContext onCancelContext,
+                                                  CancellationToken cancellationToken)
+            where TForm : IForm, new();
 
-        public virtual Task OnUnrelatedUpdateAsync(RawContainer rawContainer,
-                                                   User askingFrom,
-                                                   string propertyName,
-                                                   OnUnrelatedUpdateContext onUnrelatedUpdateContext,
+        /// <inheritdoc/>
+        public abstract Task OnConversationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                             ConversationErrorContext conversationErrorContext,
+                                                             CancellationToken cancellationToken)
+            where TForm : IForm, new();
+
+        /// <inheritdoc/>
+        public abstract Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                   OnSuccessContext onSuccessContext,
                                                    CancellationToken cancellationToken)
-            => Task.CompletedTask;
+            where TForm : IForm, new();
 
-        public virtual Task OnValidationErrorAsync(IUpdater updater,
-                                                   ShiningInfo<long, Update>? shiningInfo,
-                                                   User user,
-                                                   string propertyName,
-                                                   ValidationErrorContext validationErrorContext,
+        /// <inheritdoc/>
+        public abstract Task OnTimeOutAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                   TimeoutContext timeoutContext,
                                                    CancellationToken cancellationToken)
-            => Task.CompletedTask;
+            where TForm : IForm, new();
 
-        public virtual Task OnCancelAsync(RawContainer? container,
-                                          User askingFrom,
-                                          string propertyName,
-                                          CancellationToken cancellationToken)
-            => Task.CompletedTask;
+        /// <inheritdoc/>
+        public abstract Task OnUnrelatedUpdateAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                           OnUnrelatedUpdateContext onUnrelatedUpdateContext,
+                                                           CancellationToken cancellationToken)
+            where TForm : IForm, new();
+
+        /// <inheritdoc/>
+        public abstract Task OnValidationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext,
+                                                           ValidationErrorContext validationErrorContext,
+                                                           CancellationToken cancellationToken)
+            where TForm : IForm, new();
     }
 }
