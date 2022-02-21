@@ -8,13 +8,12 @@ using TelegramUpdater.FillMyForm;
 using TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
 using TelegramUpdater.FillMyForm.UpdateCrackers.SealedCrackers;
 using TelegramUpdater.UpdateChannels.SealedChannels;
-using TelegramUpdater.UpdateHandlers.SealedHandlers;
 using TelegramUpdater.UpdateContainer;
 
 
 await new Updater(new TelegramBotClient("BOT_TOKEN"))
     .AddExceptionHandler<Exception>(HandleException, inherit: true) // Catch all exceptions in handlers
-    .AddUpdateHandler(new MessageHandler(HandleUpdate, FilterCutify.OnCommand("survey"))) // handle command /survey
+    .AddUpdateHandler(HandleUpdate, FilterCutify.OnCommand("survey")) // handle command /survey
     .StartAsync(); // Start.
 
 
