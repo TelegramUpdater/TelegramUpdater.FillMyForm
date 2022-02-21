@@ -1,5 +1,8 @@
 ﻿namespace TelegramUpdater.FillMyForm;
 
+/// <summary>
+/// Base interface for your forms. you better use <see cref="AbstractForm"/> to inherit from.
+/// </summary>
 public interface IForm
 {
     /// <summary>

@@ -1,5 +1,8 @@
 ﻿namespace TelegramUpdater.FillMyForm
 {
+    /// <summary>
+    /// Your form may inherit from this.
+    /// </summary>
     public abstract class AbstractForm : IForm
     {
         /// <inheritdoc/>

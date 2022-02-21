@@ -9,6 +9,13 @@ using TelegramUpdater.RainbowUtlities;
 
 namespace TelegramUpdater.FillMyForm;
 
+/// <summary>
+/// Your form filler class.
+/// </summary>
+/// <typeparam name="TForm">
+/// Your form that has some readable and writeable properties as inputs.
+/// <para><typeparamref name="TForm"/> <b>should have a parameterless ctor</b>.</para>
+/// </typeparam>
 public sealed class FormFiller<TForm> where TForm : IForm, new()
 {
     private readonly Dictionary<string, IUpdateCracker> _propertyCrackers;
@@ -279,12 +286,6 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
         }
 
         return _form;
-    }
-
-    public bool InPlaceValidate(
-        Queue<(bool timedOut, string? input)> inputs, out List<ValidationResult> validationResults)
-    {
-        throw new NotImplementedException();
     }
 
     private bool TryCrackingIt(
