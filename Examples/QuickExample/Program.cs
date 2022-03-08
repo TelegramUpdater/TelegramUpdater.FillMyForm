@@ -2,12 +2,13 @@
 using Microsoft.Extensions.Logging;
 using QuickExample;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 using TelegramUpdater;
 using TelegramUpdater.ExceptionHandlers;
 
 await new Updater(new TelegramBotClient("BOT_TOKEN"))
     .AddExceptionHandler(new ExceptionHandler<Exception>(HandleException, inherit: true))
-    .AddScopedMessage<FormHandler>()
+    .AddScopedUpdateHandler<FormHandler, Message>()
     .StartAsync();
 
 static Task HandleException(IUpdater updater, Exception exception)

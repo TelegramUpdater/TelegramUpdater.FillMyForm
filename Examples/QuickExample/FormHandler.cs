@@ -3,12 +3,12 @@ using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
 using TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
 using TelegramUpdater.UpdateContainer;
-using TelegramUpdater.UpdateHandlers.ScopedHandlers.ReadyToUse;
+using TelegramUpdater.UpdateHandlers.Scoped.ReadyToUse;
 
 namespace QuickExample;
 
 [ApplyFilter(typeof(FormStartFilter))]
-internal class FormHandler : ScopedMessageHandler
+internal class FormHandler : MessageHandler
 {
     protected override async Task HandleAsync(IContainer<Message> updateContainer)
     {
@@ -20,11 +20,11 @@ internal class FormHandler : ScopedMessageHandler
 
         if (form is not null)
         {
-            await updateContainer.Response($"Thank you, {form}");
+            await updateContainer.ResponseAsync($"Thank you, {form}");
         }
         else
         {
-            await updateContainer.Response($"Please try again later.");
+            await updateContainer.ResponseAsync($"Please try again later.");
         }
     }
 }
