@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TelegramUpdater.FillMyForm\TelegramUpdater.FillMyForm.csproj" />
+    <ProjectReference Include="..\..\Src\TelegramUpdater.FillMyForm\TelegramUpdater.FillMyForm.csproj" />
   </ItemGroup>
 
 </Project>

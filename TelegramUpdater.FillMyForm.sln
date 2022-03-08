@@ -3,21 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramUpdater.FillMyForm", "TelegramUpdater.FillMyForm\TelegramUpdater.FillMyForm.csproj", "{BC3389D4-3107-4AE6-9097-37365DC57FA6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramUpdater.FillMyFormTests", "TelegramUpdater.FillMyFormTests\TelegramUpdater.FillMyFormTests.csproj", "{253FD2EA-49F9-4C23-BDC7-1D12CA0DEB11}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{86831118-C2FA-4248-B144-FA82F9226E82}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{49E39A9E-6766-4956-B843-88307DC46A3D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{710553EF-965A-4B3A-A086-AD34C607CBFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickExample", "Examples\QuickExample\QuickExample.csproj", "{C6743B6E-0876-429F-BA81-07840CF9AD59}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BD3751C2-772F-4631-BAA9-54F8CE5E334C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyBot", "Examples\SurveyBot\SurveyBot.csproj", "{C462B52B-BA1E-4B70-AC9D-DCC33EAB29E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramUpdater.FillMyForm", "Src\TelegramUpdater.FillMyForm\TelegramUpdater.FillMyForm.csproj", "{38A7C868-88C7-4AD0-B259-67AF867C11C2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramUpdater.FillMyFormTests", "Tests\TelegramUpdater.FillMyFormTests\TelegramUpdater.FillMyFormTests.csproj", "{0A09CF5E-CF55-4075-A08C-8BBA54EA2AC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,29 +23,21 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BC3389D4-3107-4AE6-9097-37365DC57FA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC3389D4-3107-4AE6-9097-37365DC57FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC3389D4-3107-4AE6-9097-37365DC57FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC3389D4-3107-4AE6-9097-37365DC57FA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{253FD2EA-49F9-4C23-BDC7-1D12CA0DEB11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{253FD2EA-49F9-4C23-BDC7-1D12CA0DEB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{253FD2EA-49F9-4C23-BDC7-1D12CA0DEB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{253FD2EA-49F9-4C23-BDC7-1D12CA0DEB11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6743B6E-0876-429F-BA81-07840CF9AD59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6743B6E-0876-429F-BA81-07840CF9AD59}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6743B6E-0876-429F-BA81-07840CF9AD59}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6743B6E-0876-429F-BA81-07840CF9AD59}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C462B52B-BA1E-4B70-AC9D-DCC33EAB29E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C462B52B-BA1E-4B70-AC9D-DCC33EAB29E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C462B52B-BA1E-4B70-AC9D-DCC33EAB29E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C462B52B-BA1E-4B70-AC9D-DCC33EAB29E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38A7C868-88C7-4AD0-B259-67AF867C11C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38A7C868-88C7-4AD0-B259-67AF867C11C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38A7C868-88C7-4AD0-B259-67AF867C11C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38A7C868-88C7-4AD0-B259-67AF867C11C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A09CF5E-CF55-4075-A08C-8BBA54EA2AC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A09CF5E-CF55-4075-A08C-8BBA54EA2AC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A09CF5E-CF55-4075-A08C-8BBA54EA2AC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A09CF5E-CF55-4075-A08C-8BBA54EA2AC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C6743B6E-0876-429F-BA81-07840CF9AD59} = {49E39A9E-6766-4956-B843-88307DC46A3D}
-		{C462B52B-BA1E-4B70-AC9D-DCC33EAB29E3} = {49E39A9E-6766-4956-B843-88307DC46A3D}
+		{38A7C868-88C7-4AD0-B259-67AF867C11C2} = {710553EF-965A-4B3A-A086-AD34C607CBFF}
+		{0A09CF5E-CF55-4075-A08C-8BBA54EA2AC8} = {BD3751C2-772F-4631-BAA9-54F8CE5E334C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40257F22-C554-4F20-A9D9-809574EB26FB}
