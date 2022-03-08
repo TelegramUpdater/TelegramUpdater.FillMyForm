@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.2-alpha</Version>
+    <Version>1.1.0-preview.0.1</Version>
     <Authors>immmdreza</Authors>
     <Company>TelegramUpdater</Company>
     <Description>This is an extension package for TelegramUpdater to help you fill a form in a blink of an eye.</Description>
@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TelegramUpdater" Version="1.1.14-alpha" />
+    <PackageReference Include="TelegramUpdater" Version="1.4.0-preview.2.2" />
   </ItemGroup>
 
 </Project>

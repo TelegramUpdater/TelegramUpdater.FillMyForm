@@ -6,6 +6,9 @@ namespace TelegramUpdater.FillMyForm;
 [AttributeUsage(AttributeTargets.Property)]
 public class FormPropertyAttribute : Attribute
 {
+    /// <summary>
+    /// Get or set input priority for this property.
+    /// </summary>
     public int Priority { get; set; } = 0;
 
     /// <summary>

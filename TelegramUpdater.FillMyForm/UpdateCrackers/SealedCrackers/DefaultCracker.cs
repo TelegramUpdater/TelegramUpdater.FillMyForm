@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot.Types;
 using TelegramUpdater.FillMyForm.CancelTriggers;
-using TelegramUpdater.UpdateChannels.SealedChannels;
+using TelegramUpdater.UpdateChannels.ReadyToUse;
 
 namespace TelegramUpdater.FillMyForm.UpdateCrackers.SealedCrackers
 {

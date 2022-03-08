@@ -3,18 +3,19 @@ using Microsoft.Extensions.Logging;
 using SurveyBot;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
 using TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
 using TelegramUpdater.FillMyForm.UpdateCrackers.SealedCrackers;
-using TelegramUpdater.UpdateChannels.SealedChannels;
-using TelegramUpdater.UpdateHandlers.SealedHandlers;
+using TelegramUpdater.UpdateChannels.ReadyToUse;
 using TelegramUpdater.UpdateContainer;
 
 
 await new Updater(new TelegramBotClient("BOT_TOKEN"))
     .AddExceptionHandler<Exception>(HandleException, inherit: true) // Catch all exceptions in handlers
-    .AddUpdateHandler(new MessageHandler(HandleUpdate, FilterCutify.OnCommand("survey"))) // handle command /survey
+    .AddSingletonUpdateHandler(
+        UpdateType.Message, HandleUpdate, FilterCutify.OnCommand("survey")) // handle command /survey
     .StartAsync(); // Start.
 
 
@@ -52,11 +53,11 @@ async Task HandleUpdate(IContainer<Message> ctnr)
 
     if (form is not null) // Form got filled.
     {
-        await ctnr.Response($"Thank you, {form}");
+        await ctnr.ResponseAsync($"Thank you, {form}");
     }
     else // Something is wrong
     {
-        await ctnr.Response($"Please try again later.");
+        await ctnr.ResponseAsync($"Please try again later.");
     }
 }
 
