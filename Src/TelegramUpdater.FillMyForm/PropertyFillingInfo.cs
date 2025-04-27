@@ -2,36 +2,28 @@
 
 namespace TelegramUpdater.FillMyForm;
 
-internal sealed class PropertyFillingInfo
+internal sealed class PropertyFillingInfo(
+    PropertyInfo propertyInfo,
+    int priority,
+    TimeSpan timeOut)
 {
-    public PropertyFillingInfo(
-        PropertyInfo propertyInfo,
-        int priority,
-        TimeSpan timeOut)
-    {
-        PropertyInfo = propertyInfo;
-        Priority = priority;
-        TimeOut = timeOut;
-        RetryAttributes = new();
-    }
-
     internal bool Required { get; set; } = false;
 
     internal Type Type => PropertyInfo.PropertyType;
 
-    internal PropertyInfo PropertyInfo { get; }
+    internal PropertyInfo PropertyInfo { get; } = propertyInfo;
 
-    internal int Priority { get; }
+    internal int Priority { get; } = priority;
 
-    internal TimeSpan TimeOut { get; }
+    internal TimeSpan TimeOut { get; } = timeOut;
 
-    internal List<FillPropertyRetryAttribute> RetryAttributes { get; set; }
+    internal List<FillPropertyRetryAttribute> RetryAttributes { get; set; } = [];
 
     internal void SetValue(object? obj, object? value)
     {
-        PropertyInfo.SetValue(obj, value, null);
+        PropertyInfo.SetValue(obj, value, index: null);
     }
 
     internal FillPropertyRetryAttribute? GetRetryOption(FillingError fillingError)
-        => RetryAttributes.FirstOrDefault(x => x.FillingError == fillingError);
+        => RetryAttributes.Find(x => x.FillingError == fillingError);
 }

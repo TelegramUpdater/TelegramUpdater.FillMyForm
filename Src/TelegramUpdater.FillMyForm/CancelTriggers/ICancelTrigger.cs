@@ -1,12 +1,22 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TelegramUpdater.FillMyForm.CancelTriggers
-{
-    public interface ICancelTrigger
-    {
-        public UpdateType UpdateType { get; }
+namespace TelegramUpdater.FillMyForm.CancelTriggers;
 
-        public bool ShouldCancel(Update update);
-    }
+/// <summary>
+/// A cancel trigger
+/// </summary>
+public interface ICancelTrigger
+{
+    /// <summary>
+    /// Desired update type/
+    /// </summary>
+    public UpdateType UpdateType { get; }
+
+    /// <summary>
+    /// Indicates if we should cancel on the kind of update
+    /// </summary>
+    /// <param name="update"></param>
+    /// <returns></returns>
+    public bool ShouldCancel(Update update);
 }

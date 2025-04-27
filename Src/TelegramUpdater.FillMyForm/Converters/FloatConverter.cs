@@ -1,8 +1,9 @@
-﻿namespace TelegramUpdater.FillMyForm.Converters
+﻿namespace TelegramUpdater.FillMyForm.Converters;
+
+/// <inheritdoc/>
+public class FloatConverter : AbstractFormPropertyConverter<float>
 {
-    internal class FloatConverter : FormPropertyConverter<float>
-    {
-        protected override bool TryConvert(string value, out float convertedValue)
-            => float.TryParse(value, out convertedValue);
-    }
+    /// <inheritdoc/>
+    protected override bool TryConvert(string value, out float convertedValue)
+        => float.TryParse(value, out convertedValue);
 }

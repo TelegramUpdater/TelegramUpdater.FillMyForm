@@ -2,35 +2,44 @@
 using TelegramUpdater.FillMyForm.CancelTriggers;
 using TelegramUpdater.UpdateChannels;
 
-namespace TelegramUpdater.FillMyForm.UpdateCrackers
+namespace TelegramUpdater.FillMyForm.UpdateCrackers;
+
+/// <summary>
+/// Cracks something out of an update
+/// </summary>
+/// <typeparam name="T">The target item to crack out.</typeparam>
+/// <typeparam name="TUpdate">The inner actual update.</typeparam>
+public abstract class AbstractUpdateCracker<T, TUpdate>(
+    Func<Update, TUpdate?> updateResolver,
+    AbstractChannel<TUpdate> updateChannel,
+    AbstractCancelTrigger<TUpdate>? cancelTrigger = default) : IUpdateCracker
+    where TUpdate : class
 {
-    public abstract class AbstractUpdateCracker<T, TUpdate> : IUpdateCracker
-        where TUpdate : class
+    /// <summary>
+    /// Resolve actual update from an <see cref="Update"/>.
+    /// </summary>
+    protected readonly Func<Update, TUpdate?> _updateResolver = updateResolver ??
+            throw new ArgumentNullException(nameof(updateResolver));
+
+
+    /// <inheritdoc />
+    public IUpdateChannel UpdateChannel { get; } = updateChannel ??
+        throw new ArgumentNullException(nameof(updateChannel));
+
+    /// <inheritdoc />
+    public ICancelTrigger? CancelTrigger { get; } = cancelTrigger;
+
+    /// <summary>
+    /// Defines how we crack an update.
+    /// </summary>
+    /// <param name="update"></param>
+    /// <returns></returns>
+    protected abstract T Crack(TUpdate update);
+
+    /// <inheritdoc />
+    public object? CrackerExpression(Update update)
     {
-        protected readonly Func<Update, TUpdate?> _updateResolver;
-
-        protected AbstractUpdateCracker(
-            Func<Update, TUpdate?> updateResolver,
-            AbstractChannel<TUpdate> updateChannel,
-            CancelTriggerAbs<TUpdate>? cancelTrigger = default)
-        {
-            _updateResolver = updateResolver ??
-                throw new ArgumentNullException(nameof(updateResolver));
-            UpdateChannel = updateChannel ??
-                throw new ArgumentNullException(nameof(updateChannel));
-            CancelTrigger = cancelTrigger;
-        }
-
-        public IUpdateChannel UpdateChannel { get; }
-
-        public ICancelTrigger? CancelTrigger { get; }
-
-        protected abstract T Crack(TUpdate update);
-
-        public object? CrackerExpression(Update update)
-        {
-            return Crack(_updateResolver(update) ??
-                throw new InvalidOperationException("Inner update is null."));
-        }
+        return Crack(_updateResolver(update) ??
+            throw new InvalidOperationException("Inner update is null."));
     }
 }

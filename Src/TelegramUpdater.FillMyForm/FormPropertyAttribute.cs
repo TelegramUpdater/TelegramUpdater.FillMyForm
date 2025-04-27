@@ -3,6 +3,9 @@ using TelegramUpdater.FillMyForm.CancelTriggers;
 
 namespace TelegramUpdater.FillMyForm;
 
+/// <summary>
+/// Indicates options for a from property.
+/// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class FormPropertyAttribute : Attribute
 {
@@ -17,7 +20,7 @@ public class FormPropertyAttribute : Attribute
     public int TimeOut { get; set; } = 30;
 
     /// <summary>
-    /// Get or set cancel trigger type for this poropety.
+    /// Get or set cancel trigger type for this property.
     /// </summary>
     /// <remarks>
     /// Should be type of <see cref="ICancelTrigger"/>
@@ -30,7 +33,7 @@ public class FormPropertyAttribute : Attribute
             if (typeof(ICancelTrigger).IsAssignableFrom(value))
             {
                 var trigger = Activator.CreateInstance(value);
-                if (trigger is CancelTriggerAbs<Message> cancelTrigger)
+                if (trigger is AbstractCancelTrigger<Message> cancelTrigger)
                 {
                     CancelTrigger = cancelTrigger;
                 }
@@ -48,5 +51,8 @@ public class FormPropertyAttribute : Attribute
         }
     }
 
-    public CancelTriggerAbs<Message>? CancelTrigger { get; private set; }
+    /// <summary>
+    /// The trigger that cancels filling this property.
+    /// </summary>
+    public AbstractCancelTrigger<Message>? CancelTrigger { get; private set; }
 }

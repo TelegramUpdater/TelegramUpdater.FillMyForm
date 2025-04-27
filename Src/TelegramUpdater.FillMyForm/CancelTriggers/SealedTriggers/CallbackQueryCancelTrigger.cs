@@ -1,13 +1,10 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers
+namespace TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
+
+/// <inheritdoc />
+public class CallbackQueryCancelTrigger(Filter<CallbackQuery> shouldCancel)
+    : CancelTrigger<CallbackQuery>(x => x.CallbackQuery, UpdateType.CallbackQuery, shouldCancel)
 {
-    public class CallbackQueryCancelTrigger : CancelTrigger<CallbackQuery>
-    {
-        public CallbackQueryCancelTrigger(Filter<CallbackQuery> shouldCancel)
-            : base(x => x.CallbackQuery, UpdateType.CallbackQuery, shouldCancel)
-        {
-        }
-    }
 }

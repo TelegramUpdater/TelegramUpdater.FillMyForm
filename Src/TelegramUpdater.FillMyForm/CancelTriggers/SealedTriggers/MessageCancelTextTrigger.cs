@@ -1,21 +1,19 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers
-{
-    public sealed class MessageCancelTextTrigger : CancelTriggerAbs<Message>
-    {
-        public MessageCancelTextTrigger() : base(x=> x.Message, UpdateType.Message)
-        {
-        }
+namespace TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
 
-        protected override bool ShouldCancel(Message resolved)
+/// <inheritdoc />
+public sealed class MessageCancelTextTrigger()
+    : AbstractCancelTrigger<Message>(x => x.Message, UpdateType.Message)
+{
+    /// <inheritdoc />
+    protected override bool ShouldCancel(Message resolved)
+    {
+        return resolved switch
         {
-            return resolved switch
-            {
-                { Text: { } txt } => txt.ToLower() == "/cancel",
-                _ => false,
-            };
-        }
+            { Text: { } txt } => string.Equals(txt, "/cancel", StringComparison.OrdinalIgnoreCase),
+            _ => false,
+        };
     }
 }

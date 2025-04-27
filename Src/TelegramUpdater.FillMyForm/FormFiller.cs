@@ -4,8 +4,8 @@ using Telegram.Bot.Types;
 using TelegramUpdater.FillMyForm.CancelTriggers;
 using TelegramUpdater.FillMyForm.Converters;
 using TelegramUpdater.FillMyForm.UpdateCrackers;
-using TelegramUpdater.FillMyForm.UpdateCrackers.SealedCrackers;
-using TelegramUpdater.RainbowUtlities;
+using TelegramUpdater.FillMyForm.UpdateCrackers.Crackers;
+using TelegramUpdater.RainbowUtilities;
 
 namespace TelegramUpdater.FillMyForm;
 
@@ -13,7 +13,7 @@ namespace TelegramUpdater.FillMyForm;
 /// Your form filler class.
 /// </summary>
 /// <typeparam name="TForm">
-/// Your form that has some readable and writeable properties as inputs.
+/// Your form that has some readable and writable properties as inputs.
 /// <para><typeparamref name="TForm"/> <b>should have a parameterless ctor</b>.</para>
 /// </typeparam>
 public sealed class FormFiller<TForm> where TForm : IForm, new()
@@ -42,24 +42,24 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
     {
         Updater = updater ?? throw new ArgumentNullException(nameof(updater));
 
-        _propertyCrackers = new();
+        _propertyCrackers = new(StringComparer.Ordinal);
         _defaultCancelTrigger = defaultCancelTrigger;
 
         // Default converters.
-        _convertersByType = new List<Type>()
-        {
+        _convertersByType =
+        [
             typeof(StringConverter),
             typeof(IntegerConverter),
             typeof(LongConverter),
             typeof(FloatConverter),
-        };
+        ];
 
         if (additionalConverters != null)
         {
             _convertersByType = _convertersByType.Union(additionalConverters);
         }
 
-        _converters = new List<IFormPropertyConverter>();
+        _converters = [];
 
         InitConverters();
 
@@ -74,15 +74,20 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
             ctx.Build(this);
         }
 
-        propertyFillingInfo = validProperties
+        propertyFillingInfo = [.. validProperties
             .Select(x =>
             {
                 var attributeInfo = x.GetCustomAttribute<FormPropertyAttribute>();
 
+#if NET8_0_OR_GREATER
                 // get retry options
                 var retryOptions = x.GetCustomAttributes<FillPropertyRetryAttribute>()
                     .DistinctBy(x => x.FillingError);
-
+#else
+                // get retry options
+                var retryOptions = x.GetCustomAttributes<FillPropertyRetryAttribute>()
+                    .GroupBy(x => x.FillingError).Select(x=> x.First());
+#endif
                 var fillingInfo = new PropertyFillingInfo(
                     x,
                     attributeInfo?.Priority?? 0,
@@ -103,8 +108,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
 
                 return fillingInfo;
             })
-            .OrderBy(x=> x.Priority)
-            .ToArray();
+            .OrderBy(x=> x.Priority),];
     }
 
     /// <summary>
@@ -122,11 +126,15 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
     /// <exception cref="InvalidOperationException"></exception>
     public async Task<TForm?> FillAsync(User user, CancellationToken cancellationToken = default)
     {
-        FormFillterContext<TForm> FillerCtx(string propertyName)
+        FormFillerContext<TForm> FillerCtx(string propertyName)
             => new(this, user, propertyName);
 
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(user);
+#else
         if (user is null)
             throw new ArgumentNullException(nameof(user));
+#endif
 
         // TODO: get user's queue id from user id and rainbow.
         //      Check if provided user id owns any queue.
@@ -138,14 +146,14 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
 
         foreach (var property in propertyFillingInfo)
         {
-            await _form.OnBeginAskAsync(FillerCtx(property.PropertyInfo.Name), cancellationToken);
+            await _form.OnBeginAskAsync(FillerCtx(property.PropertyInfo.Name), cancellationToken).ConfigureAwait(false);
 
             var cracker = GetCracker(property.PropertyInfo.Name);
 
             while (true)
             {
                 var update = await Updater.Rainbow.ReadNextAsync(
-                    queueId, cracker.UpdateChannel.TimeOut, cancellationToken);
+                    queueId, cracker.UpdateChannel.TimeOut, cancellationToken).ConfigureAwait(false);
 
                 var timedOut = update == null;
 
@@ -155,9 +163,9 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
 
                     await _form.OnTimeOutAsync(FillerCtx(property.PropertyInfo.Name),
                         new TimeoutContext(
-                            CreateRetryContext(timeOutRetry),
+                            FormFiller<TForm>.CreateRetryContext(timeOutRetry),
                             property.TimeOut),
-                        cancellationToken);
+                        cancellationToken).ConfigureAwait(false);
 
                     if (FormFiller<TForm>.CheckRetryOptions(timeOutRetry))
                         continue;
@@ -178,31 +186,31 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                     }
                 }
 
-                // NOTE: smth that is cancelled, should not do retry.
+                // NOTE: something that is canceled, should not do retry.
 
-                // Do not try converting if it's time out or cancelled
+                // Do not try converting if it's time out or canceled
                 // Since there's no suitable update to convert in here!
                 // Go directly to the set value and validations.
                 if (timedOut || cancelled)
                 {
-                    // Cancelled or timed out
+                    // Canceled or timed out
                     if (cancelled)
                     {
                         // Update can't be null.
                         await _form.OnCancelAsync(
                             FillerCtx(property.PropertyInfo.Name),
                             new OnCancelContext(update!),
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
                     }
 
                     input = null;
                 }
-                else // Not timedout and not cancelled.
+                else // Not timed out and not canceled.
                 {
                     // Update not null here.
-                    if (!cracker.UpdateChannel.ShouldChannel(update!.Value))
+                    if (!cracker.UpdateChannel.ShouldChannel(Updater, update!.Value))
                     {
-                        await UnRelated(_form, user, property.PropertyInfo.Name, update, cancellationToken);
+                        await UnRelated(_form, user, property.PropertyInfo.Name, update, cancellationToken).ConfigureAwait(false);
                         continue;
                     }
 
@@ -214,10 +222,10 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                         await _form.OnConversationErrorAsync(
                             FillerCtx(property.PropertyInfo.Name),
                             new ConversationErrorContext(
-                                CreateRetryContext(convertOption),
+                                FormFiller<TForm>.CreateRetryContext(convertOption),
                                 property.Type,
                                 update),
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
 
                         if (FormFiller<TForm>.CheckRetryOptions(convertOption))
                             continue;
@@ -227,22 +235,22 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                     }
                 }
 
-                // Validating fase
+                // Validating phase
                 var retryOption = property.GetRetryOption(FillingError.ValidationError);
 
                 if (input != null)
                 {
                     // Failed to set value? then it's a validation error
-                    if (!TrySetPropertyValue(_form, property, input, out var validationResults))
+                    if (!FormFiller<TForm>.TrySetPropertyValue(_form, property, input, out var validationResults))
                     {
                         await _form.OnValidationErrorAsync(
                             FillerCtx(property.PropertyInfo.Name),
                             new ValidationErrorContext(
-                                CreateRetryContext(retryOption),
+                                FormFiller<TForm>.CreateRetryContext(retryOption),
                                 update,
-                                false,
+                                RequiredItemNotSupplied: false,
                                 validationResults),
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
 
                         if (FormFiller<TForm>.CheckRetryOptions(retryOption))
                             continue;
@@ -259,13 +267,13 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                         await _form.OnValidationErrorAsync(
                             FillerCtx(property.PropertyInfo.Name),
                             new ValidationErrorContext(
-                                CreateRetryContext(retryOption),
+                                FormFiller<TForm>.CreateRetryContext(retryOption),
                                 update,
-                                true,
-                                Array.Empty<ValidationResult>()),
-                            cancellationToken);
+                                RequiredItemNotSupplied: true,
+                                []),
+                            cancellationToken).ConfigureAwait(false);
 
-                        if (!cancelled) // Don't retry if it's cancelled.
+                        if (!cancelled) // Don't retry if it's canceled.
                         {
                             if (FormFiller<TForm>.CheckRetryOptions(retryOption))
                                 continue;
@@ -280,7 +288,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                 await _form.OnSuccessAsync(
                     FillerCtx(property.PropertyInfo.Name),
                     new OnSuccessContext(input, update),
-                    cancellationToken);
+                    cancellationToken).ConfigureAwait(false);
                 break;
             }
         }
@@ -298,10 +306,8 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
             // Converter can't be null! since it checked in ctor.
             return defaultCracker.TryReCrack(update, converter!, out input);
         }
-        else
-        {
-            return cracker.TryCrack(update, out input);
-        }
+
+        return cracker.TryCrack(update, out input);
     }
 
     private static bool CheckRetryOptions(FillPropertyRetryAttribute? retryAttribute)
@@ -315,7 +321,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
         return false;
     }
 
-    private RetryContext? CreateRetryContext(FillPropertyRetryAttribute? retryAttribute)
+    private static RetryContext? CreateRetryContext(FillPropertyRetryAttribute? retryAttribute)
     {
         if (retryAttribute is not null)
         {
@@ -329,54 +335,52 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
 
     private IUpdateCracker GetCracker(string propertyName) => _propertyCrackers[propertyName];
 
-    private async Task UnRelated(TForm form,
-                                 User user,
-                                 string propertyName,
-                                 ShiningInfo<long, Update> arg2,
-                                 CancellationToken cancellationToken)
+    private async Task UnRelated(
+        TForm form,
+        User user,
+        string propertyName,
+        ShiningInfo<long, Update> arg2,
+        CancellationToken cancellationToken)
     {
         await form.OnUnrelatedUpdateAsync(
-            new FormFillterContext<TForm>(this, user, propertyName),
+            new FormFillerContext<TForm>(this, user, propertyName),
             new OnUnrelatedUpdateContext(arg2),
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
     }
 
     internal FormFiller<TForm> AddCracker(string propName, IUpdateCracker cracker)
     {
-        if (!validProps.Any(x => x == propName))
+        if (!validProps.Any(x => string.Equals(x, propName, StringComparison.Ordinal)))
         {
             throw new InvalidOperationException("Selected property not found.");
         }
 
-        if (_propertyCrackers.ContainsKey(propName))
+        if (!_propertyCrackers.TryAdd(propName, cracker))
         {
             _propertyCrackers[propName] = cracker;
         }
-        else
-        {
-            _propertyCrackers.Add(propName, cracker);
-        }
+
         return this;
     }
 
-    private bool TrySetPropertyValue(
+    private static bool TrySetPropertyValue(
         TForm form,
         PropertyFillingInfo fillingInfo, object input,
         out List<ValidationResult> validationResults)
     {
-        validationResults = new List<ValidationResult>();
-        var result = ValidateProperty(form, fillingInfo.PropertyInfo.Name, input, out var compValidations);
+        validationResults = [];
+        var result = FormFiller<TForm>.ValidateProperty(form, fillingInfo.PropertyInfo.Name, input, out var compValidations);
         if (result)
         {
             fillingInfo.SetValue(form, input);
         }
 
-        validationResults = validationResults.Concat(compValidations).ToList();
+        validationResults = [.. validationResults, .. compValidations];
         return result;
     }
 
     private IFormPropertyConverter? GetConverterForType(Type type)
-        => _converters.FirstOrDefault(x => x.ConvertTo == type);
+        => _converters.Find(x => x.ConvertTo == type);
 
     private void InitConverters()
     {
@@ -389,11 +393,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                 throw new InvalidOperationException("All converters should implement IFormPropertyConverter.");
             }
 
-            var converter = (IFormPropertyConverter?)Activator.CreateInstance(converterType);
-            if (converter == null)
-            {
-                throw new InvalidOperationException($"Can't create an instance of {converterType}");
-            }
+            var converter = (IFormPropertyConverter?)Activator.CreateInstance(converterType) ?? throw new InvalidOperationException($"Can't create an instance of {converterType}");
 
             // Delete prev converters on same type.
             _converters.RemoveAll(x => x.ConvertTo == converter.ConvertTo);
@@ -402,22 +402,20 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
         }
     }
 
-    private bool ValidateProperty(
+    private static bool ValidateProperty(
         TForm form, string propertyName,
         object? value, out ICollection<ValidationResult> validationResults)
     {
-        validationResults = new List<ValidationResult>();
-        ValidationContext valContext = new(form, null, null)
+        validationResults = [];
+        ValidationContext valContext = new(form, serviceProvider: null, items: null)
         {
-            MemberName = propertyName
+            MemberName = propertyName,
         };
 
         return Validator.TryValidateProperty(value, valContext, validationResults);
     }
 
     private static IEnumerable<PropertyInfo> GetValidProperties()
-        => typeof(TForm).GetProperties(
-            BindingFlags.Public | BindingFlags.Instance)
-            .Where(x=> x.CanWrite && x.CanRead)
-            .Where(x => x.GetCustomAttribute<FillerIgnoreAttribute>() is null);
+        => typeof(TForm).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(x => x.CanWrite && x.CanRead && x.GetCustomAttribute<FillerIgnoreAttribute>() is null);
 }

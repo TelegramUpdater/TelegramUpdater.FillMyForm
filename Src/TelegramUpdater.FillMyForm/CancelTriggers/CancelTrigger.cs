@@ -1,23 +1,18 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TelegramUpdater.FillMyForm.CancelTriggers
+namespace TelegramUpdater.FillMyForm.CancelTriggers;
+
+/// <inheritdoc />
+public class CancelTrigger<T>(
+    Func<Update, T?> updateResolver,
+    UpdateType updateType,
+    Filter<T> shouldCancel) : AbstractCancelTrigger<T>(updateResolver, updateType) where T : class
 {
-    public class CancelTrigger<T> : CancelTriggerAbs<T> where T : class
+    /// <inheritdoc />
+    protected override bool ShouldCancel(T resolved)
     {
-        private readonly Func<T, bool> _shouldCancel;
-
-        public CancelTrigger(
-            Func<Update, T?> updateResolver,
-            UpdateType updateType,
-            Filter<T> shouldCancel) : base(updateResolver, updateType)
-        {
-            _shouldCancel = shouldCancel;
-        }
-
-        protected override bool ShouldCancel(T resolved)
-        {
-            return _shouldCancel(resolved);
-        }
+        // TODO: dirty way! needs to be figure out in TelegramUpdater, provide and IUpdater less method.
+        return shouldCancel.TheyShellPass(null!, resolved);
     }
 }

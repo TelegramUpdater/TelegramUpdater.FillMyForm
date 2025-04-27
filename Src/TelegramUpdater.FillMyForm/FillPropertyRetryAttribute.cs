@@ -1,40 +1,39 @@
-﻿namespace TelegramUpdater.FillMyForm
+﻿namespace TelegramUpdater.FillMyForm;
+
+/// <summary>
+/// Apply retry options for your property.
+/// </summary>
+/// <remarks>
+/// Apply retry options for your property.
+/// </remarks>
+/// <param name="fillingError">Type of error to retry on.</param>
+/// <param name="retryCount">Possible available tries.</param>
+[AttributeUsage(AttributeTargets.Property)]
+public class FillPropertyRetryAttribute(FillingError fillingError, int retryCount) : Attribute
 {
+    private int tries = 0;
+
     /// <summary>
-    /// Apply retry options for your property.
+    /// Error popped up during filling.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property)]
-    public class FillPropertyRetryAttribute : Attribute
+    public FillingError FillingError { get; } = fillingError;
+
+    /// <summary>
+    /// Retry count.
+    /// </summary>
+    public int RetryCount { get; } = retryCount;
+
+    internal void Try()
     {
-        private int tries = 0;
-
-        /// <summary>
-        /// Apply retry options for your property.
-        /// </summary>
-        /// <param name="fillingError">Type of error to retry on.</param>
-        /// <param name="retryCount">Possible available tries.</param>
-        public FillPropertyRetryAttribute(FillingError fillingError, int retryCount)
+        if (!CanTry)
         {
-            FillingError = fillingError;
-            RetryCount = retryCount;
+            throw new InvalidOperationException("Can't try anymore.");
         }
 
-        public FillingError FillingError { get; }
-
-        public int RetryCount { get; }
-
-        internal void Try()
-        {
-            if (!CanTry)
-            {
-                throw new InvalidOperationException("Can't try anymore.");
-            }
-
-            tries++;
-        }
-
-        internal bool CanTry => tries < RetryCount;
-
-        internal int Tried => tries;
+        tries++;
     }
+
+    internal bool CanTry => tries < RetryCount;
+
+    internal int Tried => tries;
 }
