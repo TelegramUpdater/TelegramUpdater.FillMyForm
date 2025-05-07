@@ -12,7 +12,7 @@ namespace TelegramUpdater.FillMyForm.UpdateCrackers.Crackers;
 public sealed class MessageTextIntCracker(
     TimeSpan timeOut,
     AbstractCancelTrigger<Message>? cancelTrigger = default)
-    : AbstractUpdateCracker<int, Message>(x => x.Message, new MessageChannel(timeOut, FilterCutify.Text()), cancelTrigger)
+    : AbstractUpdateCracker<int, Message>(x => x.Message, new MessageChannel(timeOut, ReadyFilters.Text()), cancelTrigger)
 {
     /// <inheritdoc/>
     protected override int Crack(Message update)

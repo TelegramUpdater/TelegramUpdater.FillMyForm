@@ -10,7 +10,7 @@ namespace TelegramUpdater.FillMyForm.UpdateCrackers.Crackers;
 /// <param name="timeOut"></param>
 /// <param name="cancelTrigger"></param>
 public sealed class DefaultCracker(TimeSpan timeOut, AbstractCancelTrigger<Message>? cancelTrigger = default)
-    : AbstractUpdateCracker<object, Message>(x => x.Message, new MessageChannel(timeOut, FilterCutify.Text()), cancelTrigger)
+    : AbstractUpdateCracker<object, Message>(x => x.Message, new MessageChannel(timeOut, ReadyFilters.Text()), cancelTrigger)
 {
     /// <summary>
     /// Tries to re crack the update. (Idk know why yet!)

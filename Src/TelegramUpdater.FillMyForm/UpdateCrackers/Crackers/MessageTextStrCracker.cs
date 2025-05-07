@@ -10,7 +10,7 @@ namespace TelegramUpdater.FillMyForm.UpdateCrackers.Crackers;
 /// <param name="timeOut"></param>
 /// <param name="cancelTrigger"></param>
 public sealed class MessageTextStrCracker(TimeSpan timeOut, AbstractCancelTrigger<Message>? cancelTrigger = default)
-    : AbstractUpdateCracker<string, Message>(x => x.Message, new MessageChannel(timeOut, FilterCutify.Text()), cancelTrigger)
+    : AbstractUpdateCracker<string, Message>(x => x.Message, new MessageChannel(timeOut, ReadyFilters.Text()), cancelTrigger)
 {
     /// <inheritdoc/>
     protected override string Crack(Message update) => update.Text!;

@@ -10,9 +10,5 @@ public class CancelTrigger<T>(
     Filter<T> shouldCancel) : AbstractCancelTrigger<T>(updateResolver, updateType) where T : class
 {
     /// <inheritdoc />
-    protected override bool ShouldCancel(T resolved)
-    {
-        // TODO: dirty way! needs to be figure out in TelegramUpdater, provide and IUpdater less method.
-        return shouldCancel.TheyShellPass(null!, resolved);
-    }
+    protected override bool ShouldCancel(T resolved) => shouldCancel.TheyShellPass(resolved);
 }
