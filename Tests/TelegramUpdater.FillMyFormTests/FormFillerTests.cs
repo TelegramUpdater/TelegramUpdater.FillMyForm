@@ -19,12 +19,12 @@ namespace TelegramUpdater.FillMyForm.Tests
         [FormProperty(Priority = 0)]
         public string FirstName { get; set; } = null!;
 
-        public override Task OnBeginAskAsync<TForm>(FormFillingContext<TForm> fillterContext, CancellationToken cancellationToken)
+        public override Task OnBeginAsk<TForm>(FormFillingContext<TForm> fillterContext, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
 
-        public override Task OnSuccessAsync<TForm>(FormFillingContext<TForm, OnSuccessContext> fillterContext, CancellationToken cancellationToken)
+        public override Task OnSuccess<TForm>(FormFillingContext<TForm, OnSuccessContext> fillterContext, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }

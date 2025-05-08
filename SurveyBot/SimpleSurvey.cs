@@ -32,7 +32,7 @@ internal class SimpleSurvey : AbstractForm
         return $"Survey result: 1. {HowLovelyWeAre}, 2. {FoundFromWhere}";
     }
 
-    public override async Task OnBeginAskAsync<TForm>(
+    public override async Task OnBeginAsk<TForm>(
         FormFillingContext<TForm> fillerContext, CancellationToken cancellationToken)
     {
         if (fillerContext.PropertyName == "HowLovelyWeAre")
@@ -51,7 +51,7 @@ internal class SimpleSurvey : AbstractForm
         }
     }
 
-    public override async Task OnSuccessAsync<TForm>(
+    public override async Task OnSuccess<TForm>(
         FormFillingContext<TForm, OnSuccessContext> fillerContext, CancellationToken cancellationToken)
     {
         switch (fillerContext.Context)
@@ -65,7 +65,7 @@ internal class SimpleSurvey : AbstractForm
         }
     }
 
-    public override async Task OnCancelAsync<TForm>(
+    public override async Task OnCancel<TForm>(
         FormFillingContext<TForm, OnCancelContext> fillerContext, CancellationToken cancellationToken)
     {
         switch (fillerContext.Context)

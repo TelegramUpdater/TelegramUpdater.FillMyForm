@@ -12,7 +12,7 @@ public interface IForm
     /// <param name="fillerContext">Filler context containing data about filling process.</param>
     /// <param name="cancellationToken">To cancel the job.</param>
     /// <returns></returns>
-    public Task OnBeginAskAsync<TForm>(
+    public Task OnBeginAsk<TForm>(
         FormFillingContext<TForm> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
@@ -24,7 +24,7 @@ public interface IForm
     /// <param name="fillerContext">Filler context containing data about filling process.</param>
     /// <param name="cancellationToken">To cancel the job.</param>
     /// <returns></returns>
-    public Task OnTimeOutAsync<TForm>(
+    public Task OnTimeOut<TForm>(
         FormFillingContext<TForm, TimeoutContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
@@ -36,7 +36,7 @@ public interface IForm
     /// <param name="fillerContext">Filler context containing data about filling process.</param>
     /// <param name="cancellationToken">To cancel the job.</param>
     /// <returns></returns>
-    public Task OnConversationErrorAsync<TForm>(
+    public Task OnConversationError<TForm>(
         FormFillingContext<TForm, ConversationErrorContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
@@ -48,7 +48,7 @@ public interface IForm
     /// <param name="fillerContext">Filler context containing data about filling process.</param>
     /// <param name="cancellationToken">To cancel the job.</param>
     /// <returns></returns>
-    public Task OnValidationErrorAsync<TForm>(
+    public Task OnValidationError<TForm>(
         FormFillingContext<TForm, ValidationErrorContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
@@ -60,7 +60,7 @@ public interface IForm
     /// <param name="fillerContext">Filler context containing data about filling process.</param>
     /// <param name="cancellationToken">To cancel the job.</param>
     /// <returns></returns>
-    public Task OnUnrelatedUpdateAsync<TForm>(
+    public Task OnUnrelatedUpdate<TForm>(
         FormFillingContext<TForm, OnUnrelatedUpdateContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
@@ -72,7 +72,7 @@ public interface IForm
     /// <param name="fillerContext">Filler context containing data about filling process.</param>
     /// <param name="cancellationToken">To cancel the job.</param>
     /// <returns></returns>
-    public Task OnSuccessAsync<TForm>(
+    public Task OnSuccess<TForm>(
         FormFillingContext<TForm, OnSuccessContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
@@ -84,7 +84,7 @@ public interface IForm
     /// <param name="fillerContext">Filler context containing data about filling process.</param>
     /// <param name="cancellationToken">To cancel the job.</param>
     /// <returns></returns>
-    public Task OnCancelAsync<TForm>(
+    public Task OnCancel<TForm>(
         FormFillingContext<TForm, OnCancelContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();

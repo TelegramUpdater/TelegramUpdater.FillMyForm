@@ -128,7 +128,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
     /// <exception cref="InvalidOperationException"></exception>
 #pragma warning disable MA0051 // Method is too long
     // This is not a method, this is magic!
-    public async Task<TForm?> FillAsync(User user, CancellationToken cancellationToken = default)
+    public async Task<TForm?> StartFilling(User user, CancellationToken cancellationToken = default)
 #pragma warning restore MA0051 // Method is too long
     {
         FormFillingContext<TForm> FillingCtx(string propertyName)
@@ -154,7 +154,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
 
         foreach (var property in propertyFillingInfo)
         {
-            await _form.OnBeginAskAsync(FillingCtx(property.PropertyInfo.Name), cancellationToken).ConfigureAwait(false);
+            await _form.OnBeginAsk(FillingCtx(property.PropertyInfo.Name), cancellationToken).ConfigureAwait(false);
 
             var cracker = GetCracker(property.PropertyInfo.Name);
 
@@ -169,7 +169,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                 {
                     var timeOutRetry = property.GetRetryOption(FillingError.TimeoutError);
 
-                    await _form.OnTimeOutAsync(
+                    await _form.OnTimeOut(
                         FillingCtxWithCtx(
                             property.PropertyInfo.Name,
                             new TimeoutContext(
@@ -210,7 +210,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                     if (cancelled)
                     {
                         // Update can't be null.
-                        await _form.OnCancelAsync(
+                        await _form.OnCancel(
                             FillingCtxWithCtx(property.PropertyInfo.Name, new OnCancelContext(update!)),
                             cancellationToken).ConfigureAwait(false);
                     }
@@ -232,7 +232,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                     {
                         var convertOption = property.GetRetryOption(FillingError.ConvertingError);
 
-                        await _form.OnConversationErrorAsync(
+                        await _form.OnConversationError(
                             FillingCtxWithCtx(property.PropertyInfo.Name,
                             new ConversationErrorContext(
                                 FormFiller<TForm>.CreateRetryContext(convertOption),
@@ -256,7 +256,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                     // Failed to set value? then it's a validation error
                     if (!FormFiller<TForm>.TrySetPropertyValue(_form, property, input, out var validationResults))
                     {
-                        await _form.OnValidationErrorAsync(
+                        await _form.OnValidationError(
                             FillingCtxWithCtx(property.PropertyInfo.Name,
                             new ValidationErrorContext(
                                 FormFiller<TForm>.CreateRetryContext(retryOption),
@@ -277,7 +277,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                     // It can't be null if it's required.
                     if (property.Required)
                     {
-                        await _form.OnValidationErrorAsync(
+                        await _form.OnValidationError(
                             FillingCtxWithCtx(property.PropertyInfo.Name,
                             new ValidationErrorContext(
                                 FormFiller<TForm>.CreateRetryContext(retryOption),
@@ -298,7 +298,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                 }
 
                 // if it's timeout or cancel but not required then the update is null but success.
-                await _form.OnSuccessAsync(
+                await _form.OnSuccess(
                     FillingCtxWithCtx(property.PropertyInfo.Name, new OnSuccessContext(input, update)),
                     cancellationToken).ConfigureAwait(false);
                 break;
@@ -354,7 +354,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
         ShiningInfo<long, Update> arg2,
         CancellationToken cancellationToken)
     {
-        await form.OnUnrelatedUpdateAsync(
+        await form.OnUnrelatedUpdate(
             new FormFillingContext<TForm, OnUnrelatedUpdateContext>(
                 this, new OnUnrelatedUpdateContext(arg2), user, propertyName),
             cancellationToken).ConfigureAwait(false);
