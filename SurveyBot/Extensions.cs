@@ -9,12 +9,12 @@ internal static class Extensions
         => new(
             [
                 [
-                    InlineKeyboardButton.WithCallbackData("SuperLovely", "HLWA_4"),
-                    InlineKeyboardButton.WithCallbackData("NotBadLovely", "HLWA_3"),
+                    InlineKeyboardButton.WithCallbackData("Super lovely", "HLWA_4"),
+                    InlineKeyboardButton.WithCallbackData("Not bad", "HLWA_3"),
                 ],
                 [
-                    InlineKeyboardButton.WithCallbackData("NotLovely", "HLWA_2"),
-                    InlineKeyboardButton.WithCallbackData("IHateYou", "HLWA_1"),
+                    InlineKeyboardButton.WithCallbackData("Not lovely", "HLWA_2"),
+                    InlineKeyboardButton.WithCallbackData("I hate you", "HLWA_1"),
                 ],
                 [InlineKeyboardButton.WithCallbackData("Cancel", "cancel")]
             ]);

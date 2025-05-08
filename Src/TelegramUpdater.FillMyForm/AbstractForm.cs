@@ -7,49 +7,43 @@ public abstract class AbstractForm : IForm
 {
     /// <inheritdoc/>
     public abstract Task OnBeginAskAsync<TForm>(
-        FormFillerContext<TForm> fillerContext,
+        FormFillingContext<TForm> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
 
     /// <inheritdoc/>
     public abstract Task OnSuccessAsync<TForm>(
-        FormFillerContext<TForm> fillerContext,
-        OnSuccessContext onSuccessContext,
+        FormFillingContext<TForm, OnSuccessContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new();
 
     /// <inheritdoc/>
     public virtual Task OnCancelAsync<TForm>(
-        FormFillerContext<TForm> fillerContext,
-        OnCancelContext onCancelContext,
+        FormFillingContext<TForm, OnCancelContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new() => Task.CompletedTask;
 
     /// <inheritdoc/>
     public virtual Task OnConversationErrorAsync<TForm>(
-        FormFillerContext<TForm> fillerContext,
-        ConversationErrorContext conversationErrorContext,
+        FormFillingContext<TForm, ConversationErrorContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new() => Task.CompletedTask;
 
     /// <inheritdoc/>
     public virtual Task OnTimeOutAsync<TForm>(
-        FormFillerContext<TForm> fillerContext,
-        TimeoutContext timeoutContext,
+        FormFillingContext<TForm, TimeoutContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new() => Task.CompletedTask;
 
     /// <inheritdoc/>
     public virtual Task OnUnrelatedUpdateAsync<TForm>(
-        FormFillerContext<TForm> fillerContext,
-        OnUnrelatedUpdateContext onUnrelatedUpdateContext,
+        FormFillingContext<TForm, OnUnrelatedUpdateContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new() => Task.CompletedTask;
 
     /// <inheritdoc/>
     public virtual Task OnValidationErrorAsync<TForm>(
-        FormFillerContext<TForm> fillerContext,
-        ValidationErrorContext validationErrorContext,
+        FormFillingContext<TForm, ValidationErrorContext> fillerContext,
         CancellationToken cancellationToken)
         where TForm : IForm, new() => Task.CompletedTask;
 }

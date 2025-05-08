@@ -14,9 +14,9 @@ namespace TelegramUpdater.FillMyForm;
 /// <param name="filler">The filler responsible for filling this form.</param>
 /// <param name="askingFrom">Information about a user being asked from.</param>
 /// <param name="propertyName">The name of form property being filled.</param>
-public class FormFillerContext<TForm>(
+public class FormFillingContext<TForm>(
     FormFiller<TForm> filler, User askingFrom, string propertyName)
-    where TForm: IForm, new()
+    where TForm : IForm, new()
 {
     /// <summary>
     /// The filler responsible for filling this form.
@@ -41,8 +41,33 @@ public class FormFillerContext<TForm>(
     /// <summary>
     /// The bot client.
     /// </summary>
-    public ITelegramBotClient TelegramBotClient => Updater.BotClient; 
+    public ITelegramBotClient TelegramBotClient => Updater.BotClient;
 }
+
+/// <summary>
+/// Full context about a field of form begin filled.
+/// </summary>
+/// <typeparam name="TForm">Type of the form.</typeparam>
+/// <typeparam name="TContext">The type context.</typeparam>
+/// <param name="filler">The filler responsible for filling this form.</param>
+/// <param name="context">Extra context.</param>
+/// <param name="askingFrom">Information about a user being asked from.</param>
+/// <param name="propertyName">The name of form property being filled.</param>
+public class FormFillingContext<TForm, TContext>(
+    FormFiller<TForm> filler, TContext context, User askingFrom, string propertyName)
+    : FormFillingContext<TForm>(filler, askingFrom, propertyName)
+    where TForm: IForm, new()
+{
+    /// <summary>
+    /// The extra context.
+    /// </summary>
+    public TContext Context { get; } = context;
+}
+
+/// <summary>
+/// There's no extra contexts
+/// </summary>
+public record NoContext;
 
 /// <summary>
 /// Context about a retry operation begin done.
@@ -109,7 +134,7 @@ public static class FormFillerContextExtensions
 {
     /// <inheritdoc cref="TelegramBotClientExtensions.SendMessage(ITelegramBotClient, ChatId, string, ParseMode, ReplyParameters?, ReplyMarkup?, LinkPreviewOptions?, int?, IEnumerable{MessageEntity}?, bool, bool, string?, string?, bool, CancellationToken)"/>
     public static async Task<Message> SendMessage<TForm>(
-        this FormFillerContext<TForm> formFiller,
+        this FormFillingContext<TForm> formFiller,
         string text,
         ParseMode parseMode = default,
         IEnumerable<MessageEntity>? entities = null,
