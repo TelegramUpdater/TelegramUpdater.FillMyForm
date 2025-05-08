@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TelegramUpdater" Version="1.8.0-preview.0.0" />
+    <PackageReference Include="TelegramUpdater" Version="1.8.0-preview.0.1" />
   </ItemGroup>
 
 	<ItemGroup Label="Dev">

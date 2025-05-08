@@ -15,7 +15,8 @@ namespace TelegramUpdater.FillMyForm;
 /// <param name="askingFrom">Information about a user being asked from.</param>
 /// <param name="propertyName">The name of form property being filled.</param>
 public class FormFillerContext<TForm>(
-    FormFiller<TForm> filler, User askingFrom, string propertyName) where TForm: IForm, new()
+    FormFiller<TForm> filler, User askingFrom, string propertyName)
+    where TForm: IForm, new()
 {
     /// <summary>
     /// The filler responsible for filling this form.
@@ -83,9 +84,10 @@ public record OnCancelContext(ShiningInfo<long, Update> ShiningInfo);
 /// <param name="RetryContext"></param>
 /// <param name="ExceptedType"></param>
 /// <param name="ShiningInfo"></param>
-public record ConversationErrorContext(RetryContext? RetryContext,
-                                       Type ExceptedType,
-                                       ShiningInfo<long, Update>? ShiningInfo);
+public record ConversationErrorContext(
+    RetryContext? RetryContext,
+    Type ExceptedType,
+    ShiningInfo<long, Update>? ShiningInfo);
 
 /// <summary>
 /// Context about validations on a specified field has been failed.
@@ -94,10 +96,11 @@ public record ConversationErrorContext(RetryContext? RetryContext,
 /// <param name="ShiningInfo"></param>
 /// <param name="RequiredItemNotSupplied"></param>
 /// <param name="ValidationResults"></param>
-public record ValidationErrorContext(RetryContext? RetryContext,
-                                     ShiningInfo<long, Update>? ShiningInfo,
-                                     bool RequiredItemNotSupplied,
-                                     IEnumerable<ValidationResult> ValidationResults);
+public record ValidationErrorContext(
+    RetryContext? RetryContext,
+    ShiningInfo<long, Update>? ShiningInfo,
+    bool RequiredItemNotSupplied,
+    IEnumerable<ValidationResult> ValidationResults);
 
 /// <summary>
 /// Extension methods for form filler.

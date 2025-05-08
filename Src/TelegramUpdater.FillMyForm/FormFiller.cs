@@ -34,7 +34,9 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
     /// <param name="defaultCancelTrigger">A default cancel trigger to use for all.</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
+#pragma warning disable MA0051 // Method is too long
     public FormFiller(
+#pragma warning restore MA0051 // Method is too long
         IUpdater updater,
         Action<CrackerContext<TForm>>? buildCrackers = default,
         IEnumerable<Type>? additionalConverters = default,
@@ -124,7 +126,10 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
+#pragma warning disable MA0051 // Method is too long
+    // This is not a method, this is magic!
     public async Task<TForm?> FillAsync(User user, CancellationToken cancellationToken = default)
+#pragma warning restore MA0051 // Method is too long
     {
         FormFillerContext<TForm> FillerCtx(string propertyName)
             => new(this, user, propertyName);
@@ -174,15 +179,18 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
                 var cancelled = false;
                 object? input;
 
-                if (cracker.CancelTrigger != null)
+                if (!timedOut)
                 {
-                    cancelled = cracker.CancelTrigger.ShouldCancel(update!.Value);
-                }
-                else // Check default cancel trigger
-                {
-                    if (_defaultCancelTrigger is not null)
+                    if (cracker.CancelTrigger != null)
                     {
-                        cancelled = _defaultCancelTrigger.ShouldCancel(update!.Value);
+                        cancelled = cracker.CancelTrigger.ShouldCancel(update!.Value);
+                    }
+                    else // Check default cancel trigger
+                    {
+                        if (_defaultCancelTrigger is not null)
+                        {
+                            cancelled = _defaultCancelTrigger.ShouldCancel(update!.Value);
+                        }
                     }
                 }
 
