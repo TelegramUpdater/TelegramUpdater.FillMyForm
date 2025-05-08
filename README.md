@@ -5,7 +5,7 @@ blink of an eye.
 
 ## How ?
 
-FMF uses `Channels` feature of TelegramUpdater to open a realtime channel between
+FMF uses `Channels` feature of TelegramUpdater to open a real time channel between
 your bot and a target user.
 
 FMF will ask from a user and the user will respond ( probably ). and meanwhile
@@ -13,7 +13,7 @@ your form is getting filled.
 
 ## Let's Start
 
-I'm gonna start with a simple form that has 3 felids: `FirsName`, `LastName` and
+I'm gonna start with a simple form that has 3 fields: `FirsName`, `LastName` and
 `Age`.
 
 First of all, create your form using a normal class.
@@ -37,12 +37,12 @@ internal class MySimpleForm
 
 ### ! Considerations
 
-- > Target properties should be: `public`, `Readable` and `Writeable`
+- > Target properties should be: `public`, `Readable` and `Writable`
   > ( both `get` and `set` )
 
 - > Form class **Should** have a parameterless constructor.
 
-A useable form should implement `IForm` interface!
+A usable form should implement `IForm` interface!
 But `AbstractForm` is what you need.
 
 Make your form a sub-class of `AbstractForm` and implement abstract methods.
@@ -62,12 +62,12 @@ internal class MySimpleForm : AbstractForm
         return string.Format("{0} {1}, {2} years old.", FirstName, LastName?? "", Age);
     }
 
-    public override async Task OnBeginAskAsync<TForm>(FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
+    public override async Task OnBeginAsk<TForm>(FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public override Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext, OnSuccessContext onSuccessContext, CancellationToken cancellationToken)
+    public override Task OnSuccess<TForm>(FormFillterContext<TForm, OnSuccessContext> fillterContext, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
@@ -77,17 +77,17 @@ internal class MySimpleForm : AbstractForm
 The things that are less requirements, are to **ask the user** and **notify him if
 input was successful**
 
-This things are possible using `OnBeginAskAsync` and `OnSuccessAsync` methods.
+This things are possible using `OnBeginAsk` and `OnSuccess` methods.
 
 > There are more methods like these to handle different conditions. but these are
 > less required methods.
 
-Let's apply a simple implementation for `OnBeginAskAsync`.
+Let's apply a simple implementation for `OnBeginAsk`.
 
 ```csharp
-public override async Task OnBeginAskAsync<TForm>(FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
+public override async Task OnBeginAsk<TForm>(FormFillterContext<TForm> fillterContext, CancellationToken cancellationToken)
 {
-    await fillterContext.SendTextMessageAsync(
+    await fillterContext.SendMessage(
         $"Please send me a value for {fillterContext.PropertyName}",
         replyMarkup: new ForceReplyMarkup(),
         cancellationToken: cancellationToken);
@@ -99,7 +99,7 @@ public override async Task OnBeginAskAsync<TForm>(FormFillterContext<TForm> fill
 For now i don't want to say anything on partial successes. Therefor:
 
 ```csharp
-public override Task OnSuccessAsync<TForm>(FormFillterContext<TForm> fillterContext, OnSuccessContext onSuccessContext, CancellationToken cancellationToken)
+public override Task OnSuccess<TForm>(FormFillterContext<TForm, OnSuccessContext> fillterContext, CancellationToken cancellationToken)
 {
     return Task.CompletedTask;
 }
@@ -122,11 +122,10 @@ internal class FormHandler : ScopedMessageHandler
 {
     protected override async Task HandleAsync(IContainer<Message> updateContainer)
     {
-        var filler = new FormFiller<MySimpleForm>(
-            updateContainer.Updater,
+        var filler = updateContainer.CreateFormFiller<MySimpleForm>(
             defaultCancelTrigger: new MessageCancelTextTrigger());
 
-        var form = await filler.FillAsync(updateContainer.Sender()!);
+        var form = await filler.StartFilling(updateContainer.Sender()!);
 
         if (form is not null)
         {
@@ -253,23 +252,23 @@ public int Age { get; set; }
 ```
 
 At this point you better implement another method to handle invalid inputs response.
-The method is `OnValidationErrorAsync`.
+The method is `OnValidationError`.
 
 I implemented it this way:
 
 ```csharp
-public override async Task OnValidationErrorAsync<TForm>(FormFillterContext<TForm> fillterContext, ValidationErrorContext validationErrorContext, CancellationToken cancellationToken)
+public override async Task OnValidationError<TForm>(FormFillterContext<TForm, ValidationErrorContext> fillterContext, CancellationToken cancellationToken)
 {
-    if (validationErrorContext.RequiredItemNotSupplied)
+    if (fillterContext.Context.RequiredItemNotSupplied)
     {
-        await fillterContext.SendTextMessageAsync(
+        await fillterContext.SendMessage(
             $"{fillterContext.PropertyName} was required! You can't just leave it.");
     }
     else
     {
-        await fillterContext.SendTextMessageAsync(
+        await fillterContext.SendMessage(
             $"You input is invalid for {fillterContext.PropertyName}.\n" +
-            string.Join("\n", validationErrorContext.ValidationResults.Select(
+            string.Join("\n", fillterContext.Context.ValidationResults.Select(
                 x => x.ErrorMessage)));
     }
 }
@@ -300,10 +299,10 @@ Now user has two more chances if he/she fails.
 
 You can implement more response methods to get more control.
   
-- `OnTimeOutAsync`
-- `OnConversationErrorAsync`
-- `OnUnrelatedUpdateAsync`
-- `OnCancelAsync`
+- `OnTimeOut`
+- `OnConversationError`
+- `OnUnrelatedUpdate`
+- `OnCancel`
 
 ### God like control
 
