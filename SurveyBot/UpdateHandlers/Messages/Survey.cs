@@ -18,8 +18,7 @@ internal class Survey : MessageHandler
         var callbackCancelTrigger = new CallbackQueryCancelTrigger(
              new MyCallbackQueryRegexFilter("^cancel$")); // Cancellation will trigger on "cancel" callback data.
 
-        var filler = new FormFiller<SimpleSurvey>(
-            container.Updater,
+        var filler = container.CreateFormFiller<SimpleSurvey>(
             ctx => ctx
             // Add custom cracker for each property
             .AddCracker(
