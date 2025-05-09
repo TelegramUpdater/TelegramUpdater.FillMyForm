@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Version>1.8.0-preview.0.1</Version>
+    <Version>1.8.0-preview.1.0</Version>
     <Authors>immmdreza</Authors>
     <Company>TelegramUpdater</Company>
     <Description>This is an extension package for TelegramUpdater to help you fill a form in a blink of an eye.</Description>
@@ -37,13 +37,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TelegramUpdater" Version="1.8.0-preview.0.1" />
+    <PackageReference Include="TelegramUpdater" Version="1.8.0-preview.1.0" />
   </ItemGroup>
 
 	<ItemGroup Label="Dev">
 		<PackageReference Include="IsExternalInit" Version="1.0.3" PrivateAssets="all" />
 		<PackageReference Include="Required" Version="1.0.0" PrivateAssets="all" />
-		<PackageReference Include="Meziantou.Analyzer" Version="2.0.198" PrivateAssets="all" />
+		<PackageReference Include="Meziantou.Analyzer" Version="2.0.201" PrivateAssets="all" />
 		<PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" />
 	</ItemGroup>
 	
