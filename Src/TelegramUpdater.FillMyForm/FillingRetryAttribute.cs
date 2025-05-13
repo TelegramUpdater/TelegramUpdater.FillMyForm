@@ -9,7 +9,7 @@
 /// <param name="fillingError">Type of error to retry on.</param>
 /// <param name="retryCount">Possible available tries.</param>
 [AttributeUsage(AttributeTargets.Property)]
-public class FillPropertyRetryAttribute(FillingError fillingError, int retryCount) : Attribute
+public class FillingRetryAttribute(FillingError fillingError, int retryCount) : Attribute
 {
     private int tries = 0;
 

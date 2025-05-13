@@ -10,11 +10,11 @@ namespace TelegramUpdater.FillMyForm.Tests
         [FormProperty(Priority = 1)]
         public string? LastName { get; set; }
 
-        [FillPropertyRetry(FillingError.ConvertingError, 2)]
+        [FillingRetry(FillingError.ConvertingError, 2)]
         [FormProperty(Priority = 2)]
         public int Age { get; set; }
 
-        [FillPropertyRetry(FillingError.TimeoutError, 2)]
+        [FillingRetry(FillingError.TimeoutError, 2)]
         [Required(AllowEmptyStrings = false, ErrorMessage = "First name is required.")]
         [FormProperty(Priority = 0)]
         public string FirstName { get; set; } = null!;

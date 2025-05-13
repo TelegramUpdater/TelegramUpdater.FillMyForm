@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot.Types;
 using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
-using TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
+using TelegramUpdater.FillMyForm.CancelTriggers.Triggers;
 using TelegramUpdater.UpdateContainer;
 using TelegramUpdater.UpdateContainer.UpdateContainers;
 using TelegramUpdater.UpdateHandlers.Scoped.ReadyToUse;

@@ -4,7 +4,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddTelegramUpdater(
     (builder) => builder
-        .AutoCollectScopedHandlers()
+        .CollectHandlers()
         .AddDefaultExceptionHandler());
 
 var host = builder.Build();

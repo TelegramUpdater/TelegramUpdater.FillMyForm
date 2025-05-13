@@ -17,13 +17,13 @@ internal sealed class PropertyFillingInfo(
 
     internal TimeSpan TimeOut { get; } = timeOut;
 
-    internal List<FillPropertyRetryAttribute> RetryAttributes { get; set; } = [];
+    internal List<FillingRetryAttribute> RetryAttributes { get; set; } = [];
 
     internal void SetValue(object? obj, object? value)
     {
         PropertyInfo.SetValue(obj, value, index: null);
     }
 
-    internal FillPropertyRetryAttribute? GetRetryOption(FillingError fillingError)
+    internal FillingRetryAttribute? GetRetryOption(FillingError fillingError)
         => RetryAttributes.Find(x => x.FillingError == fillingError);
 }

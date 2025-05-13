@@ -1,9 +1,7 @@
-﻿using Telegram.Bot.Types;
-using TelegramUpdater;
+﻿using TelegramUpdater;
 using TelegramUpdater.FillMyForm;
-using TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
+using TelegramUpdater.FillMyForm.CancelTriggers.Triggers;
 using TelegramUpdater.FillMyForm.UpdateCrackers.Crackers;
-using TelegramUpdater.Filters;
 using TelegramUpdater.UpdateChannels.ReadyToUse;
 using TelegramUpdater.UpdateContainer;
 using TelegramUpdater.UpdateContainer.UpdateContainers;
@@ -15,8 +13,8 @@ internal class Survey : MessageHandler
 {
     protected override async Task HandleAsync(MessageContainer container)
     {
-        var callbackCancelTrigger = new CallbackQueryCancelTrigger(
-             new MyCallbackQueryRegexFilter("^cancel$")); // Cancellation will trigger on "cancel" callback data.
+        var callbackCancelTrigger =
+            new CallbackQueryRegexCancelTrigger("^cancel$"); // Cancellation will trigger on "cancel" callback data.
 
         var filler = container.CreateFormFiller<SimpleSurvey>(
             ctx => ctx
@@ -33,12 +31,11 @@ internal class Survey : MessageHandler
 
             .AddCracker(
                 x => x.FoundFromWhere,
-                new CallbackQueryCracker<FoundFromWhere>(       // Same.
-                    new CallbackQueryChannel(
-                        TimeSpan.FromSeconds(5),
-                        ReadyFilters.DataMatches(@"^FFW_")),
-                    x => x.ToFoundFromWhere(),
-                    callbackCancelTrigger)));
+                new CallbackQueryCracker<FoundFromWhere>(       // Same. But different! but still same.
+                    timeOut: TimeSpan.FromSeconds(5),
+                    cracker: x => x.ToFoundFromWhere(),
+                    filter: ReadyFilters.DataMatches(@"^FFW_"),
+                    cancelTrigger: callbackCancelTrigger)));
 
 
         var form = await filler.StartFilling(container.Sender()!); // I'm sure the sender is not null, are you?
@@ -51,15 +48,5 @@ internal class Survey : MessageHandler
         {
             await container.Response($"Please try again later.");
         }
-    }
-}
-
-class MyCallbackQueryRegexFilter(string pattern) : Filter<CallbackQuery>()
-{
-    public override bool TheyShellPass(CallbackQuery input)
-    {
-        if (input.Data is null) return false;
-
-        return new StringRegex(pattern).TheyShellPass(input.Data);
     }
 }

@@ -1,10 +1,10 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TelegramUpdater.FillMyForm.CancelTriggers.SealedTriggers;
+namespace TelegramUpdater.FillMyForm.CancelTriggers.Triggers;
 
 /// <inheritdoc />
-public sealed class MessageCancelTextTrigger()
+public class MessageCancelTextTrigger()
     : AbstractCancelTrigger<Message>(x => x.Message, UpdateType.Message)
 {
     /// <inheritdoc />

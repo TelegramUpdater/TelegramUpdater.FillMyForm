@@ -83,11 +83,11 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
 
 #if NET8_0_OR_GREATER
                 // get retry options
-                var retryOptions = x.GetCustomAttributes<FillPropertyRetryAttribute>()
+                var retryOptions = x.GetCustomAttributes<FillingRetryAttribute>()
                     .DistinctBy(x => x.FillingError);
 #else
                 // get retry options
-                var retryOptions = x.GetCustomAttributes<FillPropertyRetryAttribute>()
+                var retryOptions = x.GetCustomAttributes<FillingRetryAttribute>()
                     .GroupBy(x => x.FillingError).Select(x=> x.First());
 #endif
                 var fillingInfo = new PropertyFillingInfo(
@@ -322,7 +322,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
         return cracker.TryCrack(update, out input);
     }
 
-    private static bool CheckRetryOptions(FillPropertyRetryAttribute? retryAttribute)
+    private static bool CheckRetryOptions(FillingRetryAttribute? retryAttribute)
     {
         if (retryAttribute is not null && retryAttribute.CanTry)
         {
@@ -333,7 +333,7 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
         return false;
     }
 
-    private static RetryContext? CreateRetryContext(FillPropertyRetryAttribute? retryAttribute)
+    private static RetryContext? CreateRetryContext(FillingRetryAttribute? retryAttribute)
     {
         if (retryAttribute is not null)
         {
@@ -429,5 +429,5 @@ public sealed class FormFiller<TForm> where TForm : IForm, new()
 
     private static IEnumerable<PropertyInfo> GetValidProperties()
         => typeof(TForm).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(x => x.CanWrite && x.CanRead && x.GetCustomAttribute<FillerIgnoreAttribute>() is null);
+            .Where(x => x.CanWrite && x.CanRead && x.GetCustomAttribute<IgnoreFillingAttribute>() is null);
 }
